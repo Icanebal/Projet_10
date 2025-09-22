@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "FJtrC01yWs8=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\Gateway.API\\Gateway.API.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Jasha\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.8\\microsoft.aspnetcore.openapi.9.0.8.nupkg.sha512",
+    "C:\\Users\\Jasha\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
