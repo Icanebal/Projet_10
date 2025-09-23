@@ -81,11 +81,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\Patient.API\\Patient.API.csproj",
+      "projectUniqueName": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Patient.API\\Patient.API.csproj",
       "projectName": "Patient.API",
-      "projectPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\Patient.API\\Patient.API.csproj",
+      "projectPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Patient.API\\Patient.API.csproj",
       "packagesPath": "C:\\Users\\Jasha\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\Patient.API\\obj\\",
+      "outputPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Patient.API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

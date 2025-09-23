@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\MediLabo.Web\\MediLabo.Web.csproj": {}
+    "C:\\Users\\Jasha\\source\\repos\\Projet_10\\MediLabo.Web\\MediLabo.Web.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\MediLabo.Web\\MediLabo.Web.csproj": {
+    "C:\\Users\\Jasha\\source\\repos\\Projet_10\\MediLabo.Web\\MediLabo.Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\MediLabo.Web\\MediLabo.Web.csproj",
+        "projectUniqueName": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\MediLabo.Web\\MediLabo.Web.csproj",
         "projectName": "MediLabo.Web",
-        "projectPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\MediLabo.Web\\MediLabo.Web.csproj",
+        "projectPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\MediLabo.Web\\MediLabo.Web.csproj",
         "packagesPath": "C:\\Users\\Jasha\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\MediLabo.Web\\obj\\",
+        "outputPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\MediLabo.Web\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

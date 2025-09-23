@@ -81,11 +81,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\Gateway.API\\Gateway.API.csproj",
+      "projectUniqueName": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Gateway.API\\Gateway.API.csproj",
       "projectName": "Gateway.API",
-      "projectPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\Gateway.API\\Gateway.API.csproj",
+      "projectPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Gateway.API\\Gateway.API.csproj",
       "packagesPath": "C:\\Users\\Jasha\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Projet_10\\Gateway.API\\obj\\",
+      "outputPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\Gateway.API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
