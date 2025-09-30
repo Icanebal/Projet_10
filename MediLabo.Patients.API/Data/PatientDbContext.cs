@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Patients.API.Models.Entities;
+using MediLabo.Patients.API.Models.Entities;
 
-namespace Patients.API.Data
+namespace MediLabo.Patients.API.Data
 {
     public class PatientDbContext : DbContext
     {

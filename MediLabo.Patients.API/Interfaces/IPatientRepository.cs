@@ -1,6 +1,6 @@
-﻿using Patients.API.Models.Entities;
+﻿using MediLabo.Patients.API.Models.Entities;
 
-namespace Patients.API.Interfaces
+namespace MediLabo.Patients.API.Interfaces
 {
     public interface IPatientRepository
     {

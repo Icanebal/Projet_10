@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Patients.API.Models.DTOs;
-using Patients.API.Service;
+using MediLabo.Patients.API.Models.DTOs;
+using MediLabo.Patients.API.Services;
 
-namespace Patients.API.Controllers
+namespace MediLabo.Patients.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -30,7 +30,7 @@ namespace Patients.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PatientDto>> CreatePatient(CreatePatientDto createDto)
+        public async Task<ActionResult<PatientDto>> CreatePatient([FromBody] CreatePatientDto createDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -42,7 +42,7 @@ namespace Patients.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<PatientDto>> UpdatePatient(int id, CreatePatientDto updateDto)
+        public async Task<ActionResult<PatientDto>> UpdatePatient(int id, [FromBody] CreatePatientDto updateDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Patients.API.Data;
-using Patients.API.Interfaces;
-using Patients.API.Models.Entities;
+using MediLabo.Patients.API.Data;
+using MediLabo.Patients.API.Interfaces;
+using MediLabo.Patients.API.Models.Entities;
 
-namespace Patients.API.Repositories
+namespace MediLabo.Patients.API.Repositories
 {
     public class PatientRepository : IPatientRepository
     {

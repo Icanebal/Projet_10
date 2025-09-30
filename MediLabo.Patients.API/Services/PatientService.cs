@@ -1,8 +1,8 @@
-using Patients.API.Utilities;
-using Patients.API.Models.DTOs;
-using Patients.API.Interfaces;
+using MediLabo.Patients.API.Utilities;
+using MediLabo.Patients.API.Models.DTOs;
+using MediLabo.Patients.API.Interfaces;
 
-namespace Patients.API.Service
+namespace MediLabo.Patients.API.Services
 {
     public class PatientService
     {
@@ -45,13 +45,6 @@ namespace Patients.API.Service
         {
             _logger.LogInformation("Attempting to create new patient: {FirstName} {LastName}",
                 createDto.FirstName, createDto.LastName);
-
-            // Validation métier (exemple)
-            if (createDto.BirthDate > DateTime.Now.AddYears(-1))
-            {
-                _logger.LogWarning("Invalid birth date: patient must be at least 1 year old");
-                return Result<PatientDto>.Failure("Patient must be at least 1 year old");
-            }
 
             var patient = Mapping.MapToEntity(createDto);
             var createdPatient = await _patientRepository.CreateAsync(patient);
