@@ -1,7 +1,7 @@
-using Patients.API.Models.DTOs;
-using Patients.API.Models.Entities;
+using MediLabo.Patients.API.Models.DTOs;
+using MediLabo.Patients.API.Models.Entities;
 
-namespace Patients.API.Utilities
+namespace MediLabo.Patients.API.Utilities
 {
     // Classe statique pour centraliser tous les mappings entre entités et DTOs
     public static class Mapping

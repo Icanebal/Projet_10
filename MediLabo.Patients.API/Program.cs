@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Patients.API.Data;
-using Patients.API.Interfaces;
-using Patients.API.Repositories;
-using Patients.API.Service;
+using MediLabo.Patients.API.Data;
+using MediLabo.Patients.API.Interfaces;
+using MediLabo.Patients.API.Repositories;
+using MediLabo.Patients.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
