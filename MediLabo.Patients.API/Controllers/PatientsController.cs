@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MediLabo.Patients.API.Models.DTOs;
 using MediLabo.Patients.API.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MediLabo.Patients.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class PatientsController : ControllerBase
@@ -51,6 +53,7 @@ namespace MediLabo.Patients.API.Controllers
             return result.IsFailure ? NotFound(result.Error) : Ok(result.Value);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePatient(int id)
         {

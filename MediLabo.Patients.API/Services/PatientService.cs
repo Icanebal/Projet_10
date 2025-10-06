@@ -1,6 +1,7 @@
 using MediLabo.Patients.API.Utilities;
 using MediLabo.Patients.API.Models.DTOs;
 using MediLabo.Patients.API.Interfaces;
+using MediLabo.Common;
 
 namespace MediLabo.Patients.API.Services
 {
@@ -80,7 +81,7 @@ namespace MediLabo.Patients.API.Services
             if (!success)
             {
                 _logger.LogWarning("Cannot delete - patient with ID {PatientId} not found", id);
-                return Result<bool>.Success(false);
+                return Result<bool>.Failure($"Patient with ID {id} not found");
             }
 
             _logger.LogInformation("Successfully deleted patient with ID {PatientId}", id);

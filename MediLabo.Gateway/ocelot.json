@@ -1,0 +1,98 @@
+{
+    "Routes": [
+        // ===== ROUTES PATIENTS API =====
+        {
+            "DownstreamPathTemplate": "/api/patients",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5001
+                }
+            ],
+            "UpstreamPathTemplate": "/api/patients",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+
+        {
+            "DownstreamPathTemplate": "/api/patients/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5001
+                }
+            ],
+            "UpstreamPathTemplate": "/api/patients/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+
+        {
+            "DownstreamPathTemplate": "/api/patients",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5001
+                }
+            ],
+            "UpstreamPathTemplate": "/api/patients",
+            "UpstreamHttpMethod": [ "POST" ]
+        },
+
+        {
+            "DownstreamPathTemplate": "/api/patients/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5001
+                }
+            ],
+            "UpstreamPathTemplate": "/api/patients/{id}",
+            "UpstreamHttpMethod": [ "PUT" ]
+        },
+
+        {
+            "DownstreamPathTemplate": "/api/patients/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5001
+                }
+            ],
+            "UpstreamPathTemplate": "/api/patients/{id}",
+            "UpstreamHttpMethod": [ "DELETE" ]
+        },
+
+        // ===== ROUTES IDENTITY API =====
+        {
+            "DownstreamPathTemplate": "/api/auth/register",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5003
+                }
+            ],
+            "UpstreamPathTemplate": "/api/auth/register",
+            "UpstreamHttpMethod": [ "POST" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/auth/login",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5003
+                }
+            ],
+            "UpstreamPathTemplate": "/api/auth/login",
+            "UpstreamHttpMethod": [ "POST" ]
+        }
+    ],
+    "GlobalConfiguration": {
+        "BaseUrl": "https://localhost:5000"
+    }
+}
