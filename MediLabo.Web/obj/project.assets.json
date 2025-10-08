@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net9.0": {}
+    "net9.0": {
+      "MediLabo.Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/MediLabo.Common.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MediLabo.Common.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "MediLabo.Common/1.0.0": {
+      "type": "project",
+      "path": "../MediLabo.Common/MediLabo.Common.csproj",
+      "msbuildProject": "../MediLabo.Common/MediLabo.Common.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net9.0": []
+    "net9.0": [
+      "MediLabo.Common >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Jasha\\.nuget\\packages\\": {},
@@ -38,7 +57,11 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\Jasha\\source\\repos\\Projet_10\\MediLabo.Common\\MediLabo.Common.csproj": {
+              "projectPath": "C:\\Users\\Jasha\\source\\repos\\Projet_10\\MediLabo.Common\\MediLabo.Common.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

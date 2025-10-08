@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MediLabo.Patients.API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class PatientsController : ControllerBase

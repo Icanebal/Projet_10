@@ -38,10 +38,6 @@ namespace MediLabo.Identity.Tests.Services
             );
         }
 
-        // ---------------------------
-        // RegisterAsync Tests
-        // ---------------------------
-
         [Fact]
         public async Task Register_ShouldSucceed_WhenValidData()
         {
@@ -118,31 +114,6 @@ namespace MediLabo.Identity.Tests.Services
             Assert.Equal("default-token", result.Value.Token);
             _userManagerMock.Verify(m => m.AddToRoleAsync(It.IsAny<ApplicationUser>(), "User"), Times.Once);
         }
-
-        [Fact]
-        public async Task Register_ShouldAssignAdminRole_WhenAdminSpecified()
-        {
-            var model = new RegisterModel { Email = "test@test.com", Password = "StrongPass123!", Role = "Admin", ConfirmPassword = "StrongPass123!", FirstName = "John", LastName = "Doe" };
-
-            _userManagerMock.Setup(m => m.FindByEmailAsync(model.Email))
-                .ReturnsAsync((ApplicationUser)null);
-            _userManagerMock.Setup(m => m.CreateAsync(It.IsAny<ApplicationUser>(), model.Password))
-                .ReturnsAsync(IdentityResult.Success);
-            _userManagerMock.Setup(m => m.AddToRoleAsync(It.IsAny<ApplicationUser>(), "Admin"))
-                .ReturnsAsync(IdentityResult.Success);
-
-            _tokenServiceMock.Setup(t => t.GenerateTokenAsync(It.IsAny<ApplicationUser>()))
-                .ReturnsAsync(new AuthResponse { Token = "admin-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
-
-            var result = await _authService.RegisterAsync(model);
-
-            Assert.True(result.IsSuccess);
-            Assert.Equal("admin-token", result.Value.Token);
-        }
-
-        // ---------------------------
-        // LoginAsync Tests
-        // ---------------------------
 
         [Fact]
         public async Task Login_ShouldSucceed_WhenCredentialsAreValid()

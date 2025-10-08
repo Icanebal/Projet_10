@@ -1,0 +1,63 @@
+﻿@model MediLabo.Web.Models.ViewModels.PatientViewModel
+
+@{
+    ViewData["Title"] = "Supprimer un patient";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger">@ViewData["Title"]</h2>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Annuler</a>
+    </div>
+
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">Attention !</h4>
+        <p>Vous êtes sur le point de supprimer définitivement ce patient. Cette action est <strong>irréversible</strong>.</p>
+    </div>
+
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">Patient à supprimer</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Nom complet</dt>
+                        <dd class="col-sm-8">@Model.FullName</dd>
+
+                        <dt class="col-sm-4">Date de naissance</dt>
+                        <dd class="col-sm-8">@Model.FormattedBirthDate</dd>
+
+                        <dt class="col-sm-4">Âge</dt>
+                        <dd class="col-sm-8">@Model.Age ans</dd>
+                    </dl>
+                </div>
+
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Genre</dt>
+                        <dd class="col-sm-8">
+                            @(Model.Gender == "M" ? "Homme" : "Femme")
+                        </dd>
+
+                        <dt class="col-sm-4">Adresse</dt>
+                        <dd class="col-sm-8">@(Model.Address ?? "Non renseignée")</dd>
+
+                        <dt class="col-sm-4">Téléphone</dt>
+                        <dd class="col-sm-8">@(Model.Phone ?? "Non renseigné")</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Annuler</a>
+                    <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
