@@ -1,6 +1,7 @@
 using MediLabo.Patients.API.Utilities;
 using MediLabo.Patients.API.Models.DTOs;
 using MediLabo.Patients.API.Interfaces;
+using MediLabo.Common;
 
 namespace MediLabo.Patients.API.Services
 {
@@ -46,6 +47,12 @@ namespace MediLabo.Patients.API.Services
             _logger.LogInformation("Attempting to create new patient: {FirstName} {LastName}",
                 createDto.FirstName, createDto.LastName);
 
+            var genderExists = await _patientRepository.GenderExistsAsync(createDto.GenderId);
+            if (!genderExists)
+            {
+                _logger.LogWarning("Cannot create patient - gender with ID {GenderId} does not exist", createDto.GenderId);
+                return Result<PatientDto>.Failure($"Gender with ID {createDto.GenderId} does not exist");
+            }
             var patient = Mapping.MapToEntity(createDto);
             var createdPatient = await _patientRepository.CreateAsync(patient);
 
@@ -62,6 +69,12 @@ namespace MediLabo.Patients.API.Services
             {
                 _logger.LogWarning("Cannot update - patient with ID {PatientId} not found", id);
                 return Result<PatientDto>.Failure($"Patient with ID {id} not found");
+            }
+            var genderExists = await _patientRepository.GenderExistsAsync(updateDto.GenderId);
+            if (!genderExists)
+            {
+                _logger.LogWarning("Cannot update patient - gender with ID {GenderId} does not exist", updateDto.GenderId);
+                return Result<PatientDto>.Failure($"Gender with ID {updateDto.GenderId} does not exist");
             }
 
             Mapping.MapUpdateToEntity(updateDto, existingPatient);
@@ -80,11 +93,22 @@ namespace MediLabo.Patients.API.Services
             if (!success)
             {
                 _logger.LogWarning("Cannot delete - patient with ID {PatientId} not found", id);
-                return Result<bool>.Success(false);
+                return Result<bool>.Failure($"Patient with ID {id} not found");
             }
 
             _logger.LogInformation("Successfully deleted patient with ID {PatientId}", id);
             return Result<bool>.Success(true);
+        }
+
+        public async Task<Result<IEnumerable<GenderDto>>> GetAllGendersAsync()
+        {
+            _logger.LogInformation("Attempting to retrieve all genders");
+
+            var genders = await _patientRepository.GetAllGendersAsync();
+            var genderDtos = Mapping.MapToGenderDtoCollection(genders);
+
+            _logger.LogInformation("Successfully retrieved {GenderCount} genders", genderDtos.Count());
+            return Result<IEnumerable<GenderDto>>.Success(genderDtos);
         }
     }
 }

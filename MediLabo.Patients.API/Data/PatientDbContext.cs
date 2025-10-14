@@ -11,6 +11,8 @@ namespace MediLabo.Patients.API.Data
 
         public DbSet<Patient> Patients { get; set; }
 
+        public DbSet<Gender> Genders { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,11 +30,37 @@ namespace MediLabo.Patients.API.Data
                 entity.Property(e => e.BirthDate)
                     .IsRequired();
 
-                entity.Property(e => e.Gender)
-                    .IsRequired();
+                entity.HasOne(p => p.Gender)
+                    .WithMany(g => g.Patients)
+                    .HasForeignKey(p => p.GenderId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasQueryFilter(p => !p.IsDeleted);
             });
 
+            modelBuilder.Entity<Gender>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasIndex(e => e.Name)
+                    .IsUnique();
+            });
+
+            SeedGenders(modelBuilder);
             SeedTestData(modelBuilder);
+        }
+
+        private static void SeedGenders(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Gender>().HasData(
+                new Gender { Id = 1, Name = "Homme" },
+                new Gender { Id = 2, Name = "Femme" },
+                new Gender { Id = 3, Name = "Autre" }
+            );
         }
 
         private static void SeedTestData(ModelBuilder modelBuilder)
@@ -44,7 +72,7 @@ namespace MediLabo.Patients.API.Data
                     FirstName = "Test",
                     LastName = "TestNone",
                     BirthDate = new DateTime(1966, 12, 31),
-                    Gender = "F",
+                    GenderId = 2,
                     Address = "1 Brookside St",
                     Phone = "100-222-3333",
                 },
@@ -54,7 +82,7 @@ namespace MediLabo.Patients.API.Data
                     FirstName = "Test",
                     LastName = "TestBorderline",
                     BirthDate = new DateTime(1945, 6, 24),
-                    Gender = "M",
+                    GenderId = 1,
                     Address = "2 High St",
                     Phone = "200-333-4444",
                 },
@@ -64,7 +92,7 @@ namespace MediLabo.Patients.API.Data
                     FirstName = "Test",
                     LastName = "TestInDanger",
                     BirthDate = new DateTime(2004, 6, 18),
-                    Gender = "M",
+                    GenderId = 1,
                     Address = "3 Club Road",
                     Phone = "300-444-5555",
                 },
@@ -74,7 +102,7 @@ namespace MediLabo.Patients.API.Data
                     FirstName = "Test",
                     LastName = "TestEarlyOnset",
                     BirthDate = new DateTime(2002, 6, 28),
-                    Gender = "F",
+                    GenderId = 2,
                     Address = "4 Valley Dr",
                     Phone = "400-555-6666",
                 }

@@ -1,0 +1,53 @@
+﻿@model MediLabo.Web.Models.ViewModels.UserViewModel
+
+@{
+    ViewData["Title"] = "Supprimer un utilisateur";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger">@ViewData["Title"]</h2>
+        <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+    </div>
+
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">Attention !</h4>
+        <p>Vous êtes sur le point de supprimer définitivement cet utilisateur. Cette action est <strong>irréversible</strong>.</p>
+    </div>
+
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">Utilisateur à supprimer</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Nom complet</dt>
+                <dd class="col-sm-9">@Model.FullName</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Rôles</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Roles != null && Model.Roles.Any())
+                    {
+                        @string.Join(", ", Model.Roles)
+                    }
+                    else
+                    {
+                        <span class="text-muted">-</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+                    <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

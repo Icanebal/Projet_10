@@ -9,5 +9,7 @@ namespace MediLabo.Patients.API.Interfaces
         Task<Patient> CreateAsync(Patient patient);
         Task<Patient> UpdateAsync(Patient patient);
         Task<bool> DeleteAsync(int id);
+        Task<IEnumerable<Gender>> GetAllGendersAsync();
+        Task<bool> GenderExistsAsync(int genderId);
     }
 }
