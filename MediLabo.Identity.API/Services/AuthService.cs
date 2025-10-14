@@ -22,7 +22,7 @@ namespace MediLabo.Identity.API.Services
             _tokenService = tokenService;
             _logger = logger;
         }
-        public async Task<Result<AuthResponse>> RegisterAsync(RegisterModel model)
+        public async Task<Result<AuthResponseDto>> RegisterAsync(RegisterModel model)
         {
             _logger.LogInformation("Attempting to register user with email: {Email}", model.Email);
 
@@ -30,7 +30,7 @@ namespace MediLabo.Identity.API.Services
             if (existingUser != null)
             {
                 _logger.LogWarning("Registration failed: Email {Email} already exists", model.Email);
-                return Result<AuthResponse>.Failure("Email already exists");
+                return Result<AuthResponseDto>.Failure("Email already exists");
             }
 
             var user = new ApplicationUser
@@ -50,7 +50,7 @@ namespace MediLabo.Identity.API.Services
                 var errors = createResult.Errors.Select(e => e.Description).ToList();
                 _logger.LogError("User creation failed for {Email}. Errors: {Errors}",
                     model.Email, string.Join(", ", errors));
-                return Result<AuthResponse>.Failure(errors);
+                return Result<AuthResponseDto>.Failure(errors);
             }
 
             var roleResult = await _userManager.AddToRoleAsync(user, model.Role);
@@ -64,10 +64,10 @@ namespace MediLabo.Identity.API.Services
 
             var authResponse = await _tokenService.GenerateTokenAsync(user);
 
-            return Result<AuthResponse>.Success(authResponse);
+            return Result<AuthResponseDto>.Success(authResponse);
         }
 
-        public async Task<Result<AuthResponse>> LoginAsync(LoginModel model)
+        public async Task<Result<AuthResponseDto>> LoginAsync(LoginModel model)
         {
             _logger.LogInformation("Login attempt for email: {Email}", model.Email);
 
@@ -76,7 +76,7 @@ namespace MediLabo.Identity.API.Services
             if (user == null)
             {
                 _logger.LogWarning("Login failed: User with email {Email} not found", model.Email);
-                return Result<AuthResponse>.Failure("Invalid email or password");
+                return Result<AuthResponseDto>.Failure("Invalid email or password");
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
@@ -84,14 +84,14 @@ namespace MediLabo.Identity.API.Services
             if (!result.Succeeded)
             {
                 _logger.LogWarning("Login failed: Invalid password for email {Email}", model.Email);
-                return Result<AuthResponse>.Failure("Invalid email or password");
+                return Result<AuthResponseDto>.Failure("Invalid email or password");
             }
 
             _logger.LogInformation("User {Email} logged in successfully", model.Email);
 
             var authResponse = await _tokenService.GenerateTokenAsync(user);
 
-            return Result<AuthResponse>.Success(authResponse);
+            return Result<AuthResponseDto>.Success(authResponse);
         }
     }
 }

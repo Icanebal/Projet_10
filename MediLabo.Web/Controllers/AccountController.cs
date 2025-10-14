@@ -43,7 +43,7 @@ public class AccountController : Controller
         if (result.IsFailure)
         {
             _logger.LogWarning("Login failed for user {Username}", loginViewModel.Username);
-            ModelState.AddModelError(string.Empty, "Nom d'utilisateur ou mot de passe incorrect");
+            ModelState.AddModelError(string.Empty, result.Error ?? "Erreur lors de la connexion");
             return View(loginViewModel);
         }
 
@@ -67,7 +67,7 @@ public class AccountController : Controller
 
         _authService.Logout();
 
-        TempData["SuccessMessage"] = "Vous êtes maintenant déconnecté";
+        TempData["SuccessMessage"] = "Déconnexion réussie";
         return RedirectToAction("Login");
     }
 
@@ -122,7 +122,7 @@ public class AccountController : Controller
         if (result.IsFailure)
         {
             _logger.LogWarning("Registration failed for email {Email}", registerViewModel.Email);
-            ModelState.AddModelError(string.Empty, result.Error ?? "Erreur lors de l'inscription");
+            ModelState.AddModelError(string.Empty, result.Error ?? "Erreur inconnue");
             return View(registerViewModel);
         }
 

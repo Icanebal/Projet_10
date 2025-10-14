@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MediLabo.Web.Services;
 using MediLabo.Web.Models.ViewModels;
 
@@ -24,7 +25,7 @@ public class PatientsController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to retrieve patients: {Error}", result.Error);
-            TempData["ErrorMessage"] = $"Erreur lors de la récupération des patients : {result.Error}";
+            TempData["ErrorMessage"] = result.Error ?? "Erreur lors de la récupération des patients";
             return View(new List<PatientViewModel>());
         }
 
@@ -40,16 +41,32 @@ public class PatientsController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to retrieve patient {PatientId}: {Error}", id, result.Error);
-            TempData["ErrorMessage"] = $"Patient introuvable : {result.Error}";
+            TempData["ErrorMessage"] = result.Error ?? "Patient introuvable";
             return RedirectToAction(nameof(Index));
         }
 
         return View(result.Value);
     }
 
-    public IActionResult Create()
+    private async Task LoadGendersAsync()
+    {
+        var gendersResult = await _patientService.GetAllGendersAsync();
+        
+        if (gendersResult.IsSuccess && gendersResult.Value != null)
+        {
+            ViewBag.Genders = new SelectList(gendersResult.Value, "Id", "Name");
+        }
+        else
+        {
+            _logger.LogError("Failed to load genders: {Error}", gendersResult.Error);
+            ViewBag.Genders = new SelectList(Enumerable.Empty<GenderViewModel>(), "Id", "Name");
+        }
+    }
+
+    public async Task<IActionResult> Create()
     {
         _logger.LogInformation("Displaying create patient form");
+        await LoadGendersAsync();
         return View();
     }
 
@@ -60,6 +77,7 @@ public class PatientsController : Controller
         if (!ModelState.IsValid)
         {
             _logger.LogWarning("Create patient form validation failed");
+            await LoadGendersAsync();
             return View(createPatientViewModel);
         }
 
@@ -72,7 +90,8 @@ public class PatientsController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to create patient: {Error}", result.Error);
-            ModelState.AddModelError(string.Empty, $"Erreur lors de la création : {result.Error}");
+            ModelState.AddModelError(string.Empty, result.Error ?? "Erreur lors de la création");
+            await LoadGendersAsync();
             return View(createPatientViewModel);
         }
 
@@ -89,7 +108,7 @@ public class PatientsController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to retrieve patient {PatientId} for editing: {Error}", id, result.Error);
-            TempData["ErrorMessage"] = $"Patient introuvable : {result.Error}";
+            TempData["ErrorMessage"] = result.Error ?? "Patient introuvable";
             return RedirectToAction(nameof(Index));
         }
 
@@ -98,12 +117,13 @@ public class PatientsController : Controller
             FirstName = result.Value!.FirstName,
             LastName = result.Value.LastName,
             BirthDate = result.Value.BirthDate,
-            Gender = result.Value.Gender,
+            GenderId = result.Value.GenderId,
             Address = result.Value.Address,
             Phone = result.Value.Phone
         };
 
         ViewData["PatientId"] = id;
+        await LoadGendersAsync();
         return View(updateViewModel);
     }
 
@@ -115,6 +135,7 @@ public class PatientsController : Controller
         {
             _logger.LogWarning("Edit patient form validation failed for patient {PatientId}", id);
             ViewData["PatientId"] = id;
+            await LoadGendersAsync();
             return View(updatePatientViewModel);
         }
 
@@ -125,8 +146,9 @@ public class PatientsController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to update patient {PatientId}: {Error}", id, result.Error);
-            ModelState.AddModelError(string.Empty, $"Erreur lors de la modification : {result.Error}");
+            ModelState.AddModelError(string.Empty, result.Error ?? "Erreur lors de la modification");
             ViewData["PatientId"] = id;
+            await LoadGendersAsync();
             return View(updatePatientViewModel);
         }
 
@@ -143,7 +165,7 @@ public class PatientsController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to retrieve patient {PatientId} for deletion: {Error}", id, result.Error);
-            TempData["ErrorMessage"] = $"Patient introuvable : {result.Error}";
+            TempData["ErrorMessage"] = result.Error ?? "Patient introuvable";
             return RedirectToAction(nameof(Index));
         }
 
@@ -161,7 +183,7 @@ public class PatientsController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to delete patient {PatientId}: {Error}", id, result.Error);
-            TempData["ErrorMessage"] = $"Erreur lors de la suppression : {result.Error}";
+            TempData["ErrorMessage"] = result.Error ?? "Erreur lors de la suppression";
             return RedirectToAction(nameof(Index));
         }
 

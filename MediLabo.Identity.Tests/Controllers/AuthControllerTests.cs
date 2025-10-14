@@ -34,7 +34,7 @@ namespace MediLabo.Identity.Tests.Controllers
                 Role = "User"
             };
 
-            var authResponse = new AuthResponse
+            var authResponse = new AuthResponseDto
             {
                 Token = "fake-token",
                 Email = registerModel.Email,
@@ -44,7 +44,7 @@ namespace MediLabo.Identity.Tests.Controllers
             };
 
             _authServiceMock.Setup(x => x.RegisterAsync(registerModel))
-                .ReturnsAsync(Result<AuthResponse>.Success(authResponse));
+                .ReturnsAsync(Result<AuthResponseDto>.Success(authResponse));
 
             // Act
             var result = await _controller.Register(registerModel);
@@ -92,7 +92,7 @@ namespace MediLabo.Identity.Tests.Controllers
             };
 
             _authServiceMock.Setup(x => x.RegisterAsync(registerModel))
-                .ReturnsAsync(Result<AuthResponse>.Failure("Email already exists"));
+                .ReturnsAsync(Result<AuthResponseDto>.Failure("Email already exists"));
 
             // Act
             var result = await _controller.Register(registerModel);
@@ -112,7 +112,7 @@ namespace MediLabo.Identity.Tests.Controllers
                 Password = "Test123!"
             };
 
-            var authResponse = new AuthResponse
+            var authResponse = new AuthResponseDto
             {
                 Token = "fake-token",
                 Email = loginModel.Email,
@@ -122,7 +122,7 @@ namespace MediLabo.Identity.Tests.Controllers
             };
 
             _authServiceMock.Setup(x => x.LoginAsync(loginModel))
-                .ReturnsAsync(Result<AuthResponse>.Success(authResponse));
+                .ReturnsAsync(Result<AuthResponseDto>.Success(authResponse));
 
             // Act
             var result = await _controller.Login(loginModel);
@@ -162,7 +162,7 @@ namespace MediLabo.Identity.Tests.Controllers
             };
 
             _authServiceMock.Setup(x => x.LoginAsync(loginModel))
-                .ReturnsAsync(Result<AuthResponse>.Failure("Invalid email or password"));
+                .ReturnsAsync(Result<AuthResponseDto>.Failure("Invalid email or password"));
 
             // Act
             var result = await _controller.Login(loginModel);

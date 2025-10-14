@@ -2,6 +2,7 @@
 using MediLabo.Identity.API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using MediLabo.Common;
 using Moq;
 
 namespace MediLabo.Identity.Tests.Services
@@ -51,7 +52,7 @@ namespace MediLabo.Identity.Tests.Services
             _userManagerMock.Setup(m => m.AddToRoleAsync(It.IsAny<ApplicationUser>(), model.Role))
                 .ReturnsAsync(IdentityResult.Success);
 
-            var authResponse = new AuthResponse { Token = "fake-token", Email = model.Email, FirstName = "John", LastName = "Doe"};
+            var authResponse = new AuthResponseDto { Token = "fake-token", Email = model.Email, FirstName = "John", LastName = "Doe"};
             _tokenServiceMock.Setup(t => t.GenerateTokenAsync(It.IsAny<ApplicationUser>()))
                 .ReturnsAsync(authResponse);
 
@@ -106,7 +107,7 @@ namespace MediLabo.Identity.Tests.Services
                 .Verifiable();
 
             _tokenServiceMock.Setup(t => t.GenerateTokenAsync(It.IsAny<ApplicationUser>()))
-                .ReturnsAsync(new AuthResponse { Token = "default-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
+                .ReturnsAsync(new AuthResponseDto { Token = "default-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
 
             var result = await _authService.RegisterAsync(model);
 
@@ -125,7 +126,7 @@ namespace MediLabo.Identity.Tests.Services
             _signInManagerMock.Setup(m => m.CheckPasswordSignInAsync(user, model.Password, false))
                 .ReturnsAsync(SignInResult.Success);
             _tokenServiceMock.Setup(t => t.GenerateTokenAsync(user))
-                .ReturnsAsync(new AuthResponse { Token = "login-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
+                .ReturnsAsync(new AuthResponseDto { Token = "login-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
 
             var result = await _authService.LoginAsync(model);
 
@@ -172,7 +173,7 @@ namespace MediLabo.Identity.Tests.Services
             _signInManagerMock.Setup(m => m.CheckPasswordSignInAsync(user, model.Password, false))
                 .ReturnsAsync(SignInResult.Success);
             _tokenServiceMock.Setup(t => t.GenerateTokenAsync(user))
-                .ReturnsAsync(new AuthResponse { Token = "jwt-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
+                .ReturnsAsync(new AuthResponseDto { Token = "jwt-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
 
             var result = await _authService.LoginAsync(model);
 
@@ -190,7 +191,7 @@ namespace MediLabo.Identity.Tests.Services
             _signInManagerMock.Setup(m => m.CheckPasswordSignInAsync(user, model.Password, false))
                 .ReturnsAsync(SignInResult.Success);
 
-            var authResponse = new AuthResponse { Token = "fake-token", Email = model.Email, FirstName = "John", LastName = "Doe", Roles = new List<string> { "Admin", "User" } };
+            var authResponse = new AuthResponseDto { Token = "fake-token", Email = model.Email, FirstName = "John", LastName = "Doe", Roles = new List<string> { "Admin", "User" } };
         _tokenServiceMock.Setup(t => t.GenerateTokenAsync(user)).ReturnsAsync(authResponse);
 
             var result = await _authService.LoginAsync(model);

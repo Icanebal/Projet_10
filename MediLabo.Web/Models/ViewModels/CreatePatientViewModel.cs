@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace MediLabo.Web.Models.ViewModels;
 
@@ -7,12 +7,12 @@ public class CreatePatientViewModel
     [Required(ErrorMessage = "Le prénom est obligatoire")]
     [Display(Name = "Prénom")]
     [StringLength(100, ErrorMessage = "Le prénom ne peut pas dépasser 100 caractères")]
-    public string FirstName { get; set; } = string.Empty;
+    public required string FirstName { get; set; }
 
     [Required(ErrorMessage = "Le nom est obligatoire")]
     [Display(Name = "Nom")]
     [StringLength(100, ErrorMessage = "Le nom ne peut pas dépasser 100 caractères")]
-    public string LastName { get; set; } = string.Empty;
+    public required string LastName { get; set; }
 
     [Required(ErrorMessage = "La date de naissance est obligatoire")]
     [Display(Name = "Date de naissance")]
@@ -21,7 +21,8 @@ public class CreatePatientViewModel
 
     [Required(ErrorMessage = "Le genre est obligatoire")]
     [Display(Name = "Genre")]
-    public string Gender { get; set; } = string.Empty;
+    [Range(1, int.MaxValue, ErrorMessage = "Veuillez sélectionner un genre")]
+    public required int GenderId { get; set; }
 
     [Display(Name = "Adresse")]
     [StringLength(200, ErrorMessage = "L'adresse ne peut pas dépasser 200 caractères")]

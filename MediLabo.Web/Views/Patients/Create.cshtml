@@ -1,4 +1,4 @@
-﻿@model MediLabo.Web.Models.ViewModels.CreatePatientViewModel
+@model MediLabo.Web.Models.ViewModels.CreatePatientViewModel
 
 @{
     ViewData["Title"] = "Créer un patient";
@@ -37,26 +37,23 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label asp-for="Gender" class="form-label"></label>
-                        <select asp-for="Gender" class="form-select">
-                            <option value="">-- Sélectionnez --</option>
-                            <option value="M">Homme</option>
-                            <option value="F">Femme</option>
-                            <option value="NS">Non Spécifié</option>
+                        <label asp-for="GenderId" class="form-label"></label>
+                        <select asp-for="GenderId" class="form-select" asp-items="ViewBag.Genders">
+                            <option value="">-- Sélectionnez un genre --</option>
                         </select>
-                        <span asp-validation-for="Gender" class="text-danger"></span>
+                        <span asp-validation-for="GenderId" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label asp-for="Address" class="form-label"></label>
-                    <input asp-for="Address" class="form-control" placeholder="123 Rue Exemple, 75001 Paris" />
+                    <input asp-for="Address" class="form-control" />
                     <span asp-validation-for="Address" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
                     <label asp-for="Phone" class="form-label"></label>
-                    <input asp-for="Phone" class="form-control" type="tel" placeholder="01 23 45 67 89" />
+                    <input asp-for="Phone" class="form-control" type="tel" />
                     <span asp-validation-for="Phone" class="text-danger"></span>
                 </div>
 

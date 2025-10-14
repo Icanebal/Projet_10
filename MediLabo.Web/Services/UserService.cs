@@ -1,48 +1,43 @@
-﻿using MediLabo.Common;
+using MediLabo.Common;
 using MediLabo.Web.Models.ViewModels;
 
 namespace MediLabo.Web.Services;
+
 public class UserService
 {
-    private readonly ApiService _apiService;
+    private readonly IApiService _apiService;
     private readonly ILogger<UserService> _logger;
     private const string UsersEndpoint = "/api/users";
 
-    public UserService(ApiService apiService, ILogger<UserService> logger)
+    public UserService(IApiService apiService, ILogger<UserService> logger)
     {
         _apiService = apiService;
         _logger = logger;
     }
 
+    // Récupère tous les utilisateurs
     public async Task<Result<List<UserViewModel>>> GetAllUsersAsync()
     {
-        _logger.LogInformation("Attempting to retrieve all users");
-
+        _logger.LogInformation("Retrieving all users");
         var result = await _apiService.GetAsync<List<UserViewModel>>(UsersEndpoint);
 
-        if (result.IsFailure)
-        {
-            _logger.LogError("Failed to retrieve all users: {Error}", result.Error);
-            return result;
-        }
+        _logger.Log(result.IsSuccess ? LogLevel.Information : LogLevel.Error,
+            "Get all users: {IsSuccess}, Count: {Count}, Error: {Error}",
+            result.IsSuccess, result.Value?.Count, result.Error);
 
-        _logger.LogInformation("Successfully retrieved {UserCount} users", result.Value?.Count ?? 0);
         return result;
     }
 
+    // Supprime un utilisateur
     public async Task<Result<bool>> DeleteUserAsync(string userId)
     {
-        _logger.LogInformation("Attempting to delete user with ID {UserId}", userId);
-
+        _logger.LogInformation("Deleting user with ID {UserId}", userId);
         var result = await _apiService.DeleteAsync($"{UsersEndpoint}/{userId}");
 
-        if (result.IsFailure)
-        {
-            _logger.LogError("Failed to delete user with ID {UserId}: {Error}", userId, result.Error);
-            return result;
-        }
+        _logger.Log(result.IsSuccess ? LogLevel.Information : LogLevel.Error,
+            "Delete user {UserId}: {IsSuccess}, Error: {Error}",
+            userId, result.IsSuccess, result.Error);
 
-        _logger.LogInformation("Successfully deleted user with ID {UserId}", userId);
         return result;
     }
 }

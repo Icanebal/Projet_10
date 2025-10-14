@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using MediLabo.Patients.API.Data;
 using MediLabo.Patients.API.Models.Entities;
@@ -25,8 +25,19 @@ namespace MediLabo.Patients.Tests.Repositories
             SeedTestData();
         }
 
+        // Seed les genres et les patients de test
         private void SeedTestData()
         {
+            var genders = new[]
+            {
+                new Gender { Id = 1, Name = "Homme" },
+                new Gender { Id = 2, Name = "Femme" },
+                new Gender { Id = 3, Name = "Autre" }
+            };
+
+            _context.Genders.AddRange(genders);
+            _context.SaveChanges();
+
             var patients = new[]
             {
                 new Patient
@@ -35,7 +46,7 @@ namespace MediLabo.Patients.Tests.Repositories
                     FirstName = "John",
                     LastName = "Doe",
                     BirthDate = new DateTime(1990, 1, 1),
-                    Gender = "M",
+                    GenderId = 1,
                     Address = "123 Main St",
                     Phone = "555-1234"
                 },
@@ -45,7 +56,7 @@ namespace MediLabo.Patients.Tests.Repositories
                     FirstName = "Jane",
                     LastName = "Smith",
                     BirthDate = new DateTime(1985, 5, 15),
-                    Gender = "F",
+                    GenderId = 2,
                     Address = "456 Oak Ave",
                     Phone = "555-5678"
                 }
@@ -56,12 +67,17 @@ namespace MediLabo.Patients.Tests.Repositories
         }
 
         [Fact]
-        public async Task GetAllAsync_ReturnsAllPatients()
+        public async Task GetAllAsync_ExcludesSoftDeletedPatients()
         {
+            var patientToDelete = await _context.Patients.FindAsync(1);
+            patientToDelete!.IsDeleted = true;
+            patientToDelete.DeletedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
             var result = await _repository.GetAllAsync();
 
-            result.Should().NotBeNull();
-            result.Should().HaveCount(2);
+            result.Should().HaveCount(1);
+            result.Should().NotContain(p => p.Id == 1);
         }
 
         [Fact]
@@ -75,6 +91,8 @@ namespace MediLabo.Patients.Tests.Repositories
             result!.Id.Should().Be(patientId);
             result.FirstName.Should().Be("John");
             result.LastName.Should().Be("Doe");
+            result.Gender.Should().NotBeNull();
+            result.Gender.Name.Should().Be("Homme");
         }
 
         [Fact]
@@ -95,7 +113,7 @@ namespace MediLabo.Patients.Tests.Repositories
                 FirstName = "New",
                 LastName = "Patient",
                 BirthDate = new DateTime(1995, 3, 20),
-                Gender = "M",
+                GenderId = 1,
                 Address = "789 Elm St",
                 Phone = "555-9999"
             };
@@ -105,8 +123,10 @@ namespace MediLabo.Patients.Tests.Repositories
             result.Should().NotBeNull();
             result.Id.Should().BeGreaterThan(0);
             result.FirstName.Should().Be("New");
+            result.Gender.Should().NotBeNull();
+            result.Gender.Name.Should().Be("Homme");
 
-            var savedPatient = await _context.Patients.FindAsync(result.Id);
+            var savedPatient = await _context.Patients.Include(p => p.Gender).FirstOrDefaultAsync(p => p.Id == result.Id);
             savedPatient.Should().NotBeNull();
             savedPatient!.FirstName.Should().Be("New");
         }
@@ -114,7 +134,7 @@ namespace MediLabo.Patients.Tests.Repositories
         [Fact]
         public async Task UpdateAsync_ExistingPatient_ReturnsUpdatedPatient()
         {
-            var patientToUpdate = await _context.Patients.FindAsync(1);
+            var patientToUpdate = await _context.Patients.Include(p => p.Gender).FirstOrDefaultAsync(p => p.Id == 1);
             patientToUpdate!.FirstName = "Updated";
             patientToUpdate.Address = "New Address";
 
@@ -123,8 +143,9 @@ namespace MediLabo.Patients.Tests.Repositories
             result.Should().NotBeNull();
             result.FirstName.Should().Be("Updated");
             result.Address.Should().Be("New Address");
+            result.Gender.Should().NotBeNull();
 
-            var updatedPatient = await _context.Patients.FindAsync(1);
+            var updatedPatient = await _context.Patients.Include(p => p.Gender).FirstOrDefaultAsync(p => p.Id == 1);
             updatedPatient!.FirstName.Should().Be("Updated");
             updatedPatient.Address.Should().Be("New Address");
         }
@@ -139,7 +160,8 @@ namespace MediLabo.Patients.Tests.Repositories
             result.Should().BeTrue();
 
             var deletedPatient = await _context.Patients.FindAsync(patientId);
-            deletedPatient.Should().BeNull();
+            deletedPatient.Should().NotBeNull();
+            deletedPatient!.IsDeleted.Should().BeTrue();
         }
 
         [Fact]
@@ -148,6 +170,34 @@ namespace MediLabo.Patients.Tests.Repositories
             var nonExistingId = 999;
 
             var result = await _repository.DeleteAsync(nonExistingId);
+
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task GetAllGendersAsync_ReturnsAllGenders()
+        {
+            var result = await _repository.GetAllGendersAsync();
+
+            result.Should().NotBeNull();
+            result.Should().HaveCount(3);
+            result.Should().Contain(g => g.Name == "Homme");
+            result.Should().Contain(g => g.Name == "Femme");
+            result.Should().Contain(g => g.Name == "Autre");
+        }
+
+        [Fact]
+        public async Task GenderExistsAsync_ExistingGender_ReturnsTrue()
+        {
+            var result = await _repository.GenderExistsAsync(1);
+
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task GenderExistsAsync_NonExistingGender_ReturnsFalse()
+        {
+            var result = await _repository.GenderExistsAsync(999);
 
             result.Should().BeFalse();
         }

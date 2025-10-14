@@ -1,6 +1,6 @@
-﻿namespace MediLabo.Identity.API.Models
+namespace MediLabo.Common
 {
-    public class AuthResponse
+    public class AuthResponseDto
     {
         public required string Token { get; set; }
         public DateTime Expiration { get; set; }

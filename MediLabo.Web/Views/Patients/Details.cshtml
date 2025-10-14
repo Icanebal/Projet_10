@@ -1,4 +1,4 @@
-﻿@model MediLabo.Web.Models.ViewModels.PatientViewModel
+@model MediLabo.Web.Models.ViewModels.PatientViewModel
 @inject MediLabo.Web.Services.AuthService AuthService
 
 @{
@@ -14,14 +14,6 @@
             <a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>
         </div>
     </div>
-
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
 
     <div class="card">
         <div class="card-header bg-primary text-white">
@@ -48,9 +40,7 @@
                 <div class="col-md-6">
                     <dl class="row">
                         <dt class="col-sm-4">Genre</dt>
-                        <dd class="col-sm-8">
-                            @(Model.Gender == "M" ? "Homme" : "Femme")
-                        </dd>
+                        <dd class="col-sm-8">@Model.GenderName</dd>
 
                         <dt class="col-sm-4">Adresse</dt>
                         <dd class="col-sm-8">@(Model.Address ?? "Non renseignée")</dd>

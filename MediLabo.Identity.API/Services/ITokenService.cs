@@ -1,9 +1,10 @@
 ﻿using MediLabo.Identity.API.Models;
+using MediLabo.Common;
 
 namespace MediLabo.Identity.API.Services
 {
     public interface ITokenService
     {
-        Task<AuthResponse> GenerateTokenAsync(ApplicationUser user);
+        Task<AuthResponseDto> GenerateTokenAsync(ApplicationUser user);
     }
 }

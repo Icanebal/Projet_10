@@ -1,4 +1,5 @@
 ﻿using MediLabo.Identity.API.Services;
+using MediLabo.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,29 +18,29 @@ namespace MediLabo.Identity.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<ActionResult<Result<object>>> GetAllUsers()
         {
             var result = await _usersService.GetAllUsersAsync();
 
-            if (!result.IsSuccess)
+            if (result.IsFailure)
             {
-                return BadRequest(new { message = result.Error });
+                return BadRequest(result);
             }
 
-            return Ok(result.Value);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<ActionResult<Result<bool>>> DeleteUser(string id)
         {
             var result = await _usersService.DeleteUserAsync(id);
 
-            if (!result.IsSuccess)
+            if (result.IsFailure)
             {
-                return NotFound(new { message = result.Error });
+                return NotFound(result);
             }
 
-            return NoContent();
+            return Ok(result);
         }
     }
 }

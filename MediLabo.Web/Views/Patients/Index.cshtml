@@ -1,4 +1,4 @@
-﻿@model List<MediLabo.Web.Models.ViewModels.PatientViewModel>
+@model List<MediLabo.Web.Models.ViewModels.PatientViewModel>
 @inject MediLabo.Web.Services.AuthService AuthService
 
 @{
@@ -13,22 +13,6 @@
             Nouveau patient
         </a>
     </div>
-
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
 
     @if (Model == null || !Model.Any())
     {
@@ -61,7 +45,7 @@
                             </td>
                             <td>@patient.FormattedBirthDate</td>
                             <td>@patient.Age ans</td>
-                            <td>@(patient.Gender == "M" ? "Homme" : "Femme")</td>
+                            <td>@patient.GenderName</td>
                             <td>@(patient.Phone ?? "-")</td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">

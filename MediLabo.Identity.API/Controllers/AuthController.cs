@@ -1,6 +1,7 @@
 ﻿using MediLabo.Identity.API.Models;
 using MediLabo.Identity.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using MediLabo.Common;
 
 namespace MediLabo.Identity.API.Controllers
 {
@@ -16,39 +17,39 @@ namespace MediLabo.Identity.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        public async Task<ActionResult<Result<object>>> Register([FromBody] RegisterModel model)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(Result<object>.Failure("Invalid model state"));
             }
 
             var result = await _authService.RegisterAsync(model);
 
-            if (!result.IsSuccess)
+            if (result.IsFailure)
             {
-                return BadRequest(new { message = result.Error, errors = result.Errors });
+                return BadRequest(result);
             }
 
-            return Ok(result.Value);
+            return Ok(result);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<ActionResult<Result<object>>> Login([FromBody] LoginModel model)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(Result<object>.Failure("Invalid model state"));
             }
 
             var result = await _authService.LoginAsync(model);
 
-            if (!result.IsSuccess)
+            if (result.IsFailure)
             {
-                return Unauthorized(new { message = result.Error });
+                return Unauthorized(result);
             }
 
-            return Ok(result.Value);
+            return Ok(result);
         }
     }
 }

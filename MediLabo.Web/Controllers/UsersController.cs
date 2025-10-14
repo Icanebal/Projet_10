@@ -40,7 +40,7 @@ public class UsersController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to retrieve users: {Error}", result.Error);
-            TempData["ErrorMessage"] = $"Erreur lors de la récupération des utilisateurs : {result.Error}";
+            TempData["ErrorMessage"] = result.Error ?? "Erreur lors de la récupération des utilisateurs";
             return View(new List<MediLabo.Web.Models.ViewModels.UserViewModel>());
         }
 
@@ -87,7 +87,7 @@ public class UsersController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to delete user {UserId}: {Error}", id, result.Error);
-            TempData["ErrorMessage"] = $"Erreur lors de la suppression : {result.Error}";
+            TempData["ErrorMessage"] = result.Error ?? "Erreur lors de la suppression";
             return RedirectToAction(nameof(Index));
         }
 

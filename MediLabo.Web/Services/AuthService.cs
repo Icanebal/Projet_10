@@ -1,10 +1,10 @@
-﻿using MediLabo.Common;
+using MediLabo.Common;
 
 namespace MediLabo.Web.Services;
 
 public class AuthService
 {
-    private readonly ApiService _apiService;
+    private readonly IApiService _apiService;
     private readonly ILogger<AuthService> _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private const string AuthEndpoint = "/api/auth";
@@ -13,7 +13,7 @@ public class AuthService
     private const string UserRoleSessionKey = "UserRole";
 
     public AuthService(
-        ApiService apiService,
+        IApiService apiService,
         ILogger<AuthService> logger,
         IHttpContextAccessor httpContextAccessor)
     {
@@ -22,43 +22,42 @@ public class AuthService
         _httpContextAccessor = httpContextAccessor;
     }
 
+    // Authentifie un utilisateur et stocke le token en session
     public async Task<Result<string>> LoginAsync(string username, string password)
     {
-        _logger.LogInformation("Attempting login for user {Username}", username);
+        _logger.LogInformation("Login attempt for user {Username}", username);
 
         var loginRequest = new { email = username, password };
+        var result = await _apiService.PostAsync<object, AuthResponseDto>($"{AuthEndpoint}/login", loginRequest);
 
-        var result = await _apiService.PostAsync<object, LoginResponse>(
-            $"{AuthEndpoint}/login",
-            loginRequest);
-
-        if (result.IsFailure)
+        if (result.IsSuccess && result.Value != null)
         {
-            _logger.LogError("Login failed for user {Username}: {Error}", username, result.Error);
-            return Result<string>.Failure(result.Error ?? "Unknown error");
+            var session = _httpContextAccessor.HttpContext?.Session;
+            if (session != null)
+            {
+                session.SetString(TokenSessionKey, result.Value.Token);
+                session.SetString(UserNameSessionKey, username);
+
+                if (result.Value.Roles != null && result.Value.Roles.Any())
+                {
+                    var role = result.Value.Roles.First();
+                    session.SetString(UserRoleSessionKey, role);
+                    _logger.LogInformation("User {Username} logged in successfully with role {Role}", username, role);
+                }
+                else
+                {
+                    _logger.LogInformation("User {Username} logged in successfully", username);
+                }
+            }
+
+            return Result<string>.Success(result.Value.Token);
         }
 
-        var session = _httpContextAccessor.HttpContext?.Session;
-        if (session != null && result.Value != null)
-        {
-            session.SetString(TokenSessionKey, result.Value.Token);
-            session.SetString(UserNameSessionKey, username);
-
-            if (result.Value.Roles != null && result.Value.Roles.Any())
-            {
-                var role = result.Value.Roles.First();
-                session.SetString(UserRoleSessionKey, role);
-                _logger.LogInformation("User {Username} logged in successfully with role {Role}", username, role);
-            }
-            else
-            {
-                _logger.LogInformation("User {Username} logged in successfully", username);
-            }
-        }
-
-        return Result<string>.Success(result.Value?.Token ?? string.Empty);
+        _logger.LogError("Login failed for user {Username}: {Error}", username, result.Error);
+        return Result<string>.Failure(result.Error ?? "Unknown error");
     }
 
+    // Déconnecte l'utilisateur en supprimant les données de session
     public void Logout()
     {
         var session = _httpContextAccessor.HttpContext?.Session;
@@ -71,9 +70,10 @@ public class AuthService
         session?.Remove(UserRoleSessionKey);
     }
 
+    // Enregistre un nouvel utilisateur
     public async Task<Result<string>> RegisterAsync(string email, string password, string firstName, string lastName, string role)
     {
-        _logger.LogInformation("Attempting to register new user with email {Email}", email);
+        _logger.LogInformation("Registering new user with email {Email}", email);
 
         var registerRequest = new
         {
@@ -85,23 +85,16 @@ public class AuthService
             role
         };
 
-        var result = await _apiService.PostAsync<object, RegisterResponse>(
-            $"{AuthEndpoint}/register",
-            registerRequest);
+        var result = await _apiService.PostAsync<object, AuthResponseDto>($"{AuthEndpoint}/register", registerRequest);
 
-        if (result.IsFailure)
+        if (result.IsSuccess && result.Value != null)
         {
-            _logger.LogError("Registration failed for email {Email}: {Error}", email, result.Error);
-            return Result<string>.Failure(result.Error ?? "Unknown error");
+            _logger.LogInformation("User {Email} registered successfully", email);
+            return Result<string>.Success($"Utilisateur {result.Value.FirstName} {result.Value.LastName} créé avec succès");
         }
 
-        _logger.LogInformation("User {Email} registered successfully", email);
-        return Result<string>.Success("Utilisateur créé avec succès");
-    }
-
-    private class RegisterResponse
-    {
-        public string Message { get; set; } = string.Empty;
+        _logger.LogError("Registration failed for email {Email}: {Error}", email, result.Error);
+        return Result<string>.Failure(result.Error ?? "Unknown error");
     }
 
     public string? GetToken()
@@ -128,15 +121,5 @@ public class AuthService
     {
         var role = GetUserRole();
         return role != null && role.Equals("Admin", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private class LoginResponse
-    {
-        public string Token { get; set; } = string.Empty;
-        public DateTime Expiration { get; set; }
-        public string Email { get; set; } = string.Empty;
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public List<string> Roles { get; set; } = new();
     }
 }

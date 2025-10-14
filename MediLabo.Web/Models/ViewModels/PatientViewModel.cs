@@ -1,14 +1,15 @@
-﻿namespace MediLabo.Web.Models.ViewModels;
+namespace MediLabo.Web.Models.ViewModels;
 
 public class PatientViewModel
 {
-    public int Id { get; set; }
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public DateTime BirthDate { get; set; }
-    public string Gender { get; set; } = string.Empty;
-    public string? Address { get; set; }
-    public string? Phone { get; set; }
+    public int Id { get; init; }
+    public required string FirstName { get; init; }
+    public required string LastName { get; init; }
+    public DateTime BirthDate { get; init; }
+    public int GenderId { get; init; }
+    public required string GenderName { get; init; }
+    public string? Address { get; init; }
+    public string? Phone { get; init; }
 
     public string FullName => $"{FirstName} {LastName}";
 

@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediLabo.Identity.Tests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediLabo.Common", "MediLabo.Common\MediLabo.Common.csproj", "{670EEB83-27C6-4B34-8DEC-724826607DE6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediLabo.Web.Tests", "MediLabo.Web.Tests\MediLabo.Web.Tests.csproj", "{07A7700B-CBB3-4C55-880C-BE2B6079870E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{670EEB83-27C6-4B34-8DEC-724826607DE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{670EEB83-27C6-4B34-8DEC-724826607DE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{670EEB83-27C6-4B34-8DEC-724826607DE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07A7700B-CBB3-4C55-880C-BE2B6079870E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07A7700B-CBB3-4C55-880C-BE2B6079870E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07A7700B-CBB3-4C55-880C-BE2B6079870E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07A7700B-CBB3-4C55-880C-BE2B6079870E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{97FADA27-2F93-4322-96A1-399BE2B98C05} = {05C76FC6-1F6A-4B01-BB66-26593E538EF7}
 		{A13E4C95-E4A2-4539-8BDE-9A9FC1F2CA51} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{670EEB83-27C6-4B34-8DEC-724826607DE6} = {05C76FC6-1F6A-4B01-BB66-26593E538EF7}
+		{07A7700B-CBB3-4C55-880C-BE2B6079870E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5E6FBAF3-3246-4DAB-97C8-938314165AE4}

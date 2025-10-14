@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using MediLabo.Patients.API.Services;
@@ -22,27 +22,26 @@ namespace MediLabo.Patients.Tests.Services
             _service = new PatientService(_mockRepository.Object, _mockLogger.Object);
         }
 
+        private Patient CreateTestPatient(int id, string firstName, string lastName, int genderId, string genderName)
+        {
+            return new Patient
+            {
+                Id = id,
+                FirstName = firstName,
+                LastName = lastName,
+                BirthDate = new DateTime(1990, 1, 1),
+                GenderId = genderId,
+                Gender = new Gender { Id = genderId, Name = genderName }
+            };
+        }
+
         [Fact]
         public async Task GetAllAsync_ReturnsListOfPatients()
         {
             var patients = new List<Patient>
             {
-                new Patient
-                {
-                    Id = 1,
-                    FirstName = "John",
-                    LastName = "Doe",
-                    BirthDate = new DateTime(1990, 1, 1),
-                    Gender = "M"
-                },
-                new Patient
-                {
-                    Id = 2,
-                    FirstName = "Jane",
-                    LastName = "Smith",
-                    BirthDate = new DateTime(1985, 5, 15),
-                    Gender = "F"
-                }
+                CreateTestPatient(1, "John", "Doe", 1, "Homme"),
+                CreateTestPatient(2, "Jane", "Smith", 2, "Femme")
             };
 
             _mockRepository
@@ -61,16 +60,9 @@ namespace MediLabo.Patients.Tests.Services
         public async Task GetByIdAsync_ExistingPatient_ReturnsPatientDto()
         {
             var patientId = 1;
-            var patient = new Patient
-            {
-                Id = patientId,
-                FirstName = "John",
-                LastName = "Doe",
-                BirthDate = new DateTime(1990, 1, 1),
-                Gender = "M",
-                Address = "123 Main St",
-                Phone = "555-1234"
-            };
+            var patient = CreateTestPatient(patientId, "John", "Doe", 1, "Homme");
+            patient.Address = "123 Main St";
+            patient.Phone = "555-1234";
 
             _mockRepository
                 .Setup(repo => repo.GetByIdAsync(patientId))
@@ -83,6 +75,7 @@ namespace MediLabo.Patients.Tests.Services
             result.Value!.Id.Should().Be(patientId);
             result.Value.FirstName.Should().Be("John");
             result.Value.LastName.Should().Be("Doe");
+            result.Value.GenderName.Should().Be("Homme");
         }
 
         [Fact]
@@ -108,21 +101,18 @@ namespace MediLabo.Patients.Tests.Services
                 FirstName = "New",
                 LastName = "Patient",
                 BirthDate = new DateTime(1995, 3, 20),
-                Gender = "M",
+                GenderId = 1,
                 Address = "456 Oak Ave",
                 Phone = "555-5678"
             };
 
-            var createdPatient = new Patient
-            {
-                Id = 5,
-                FirstName = createDto.FirstName,
-                LastName = createDto.LastName,
-                BirthDate = createDto.BirthDate,
-                Gender = createDto.Gender,
-                Address = createDto.Address,
-                Phone = createDto.Phone
-            };
+            var createdPatient = CreateTestPatient(5, "New", "Patient", 1, "Homme");
+            createdPatient.Address = createDto.Address;
+            createdPatient.Phone = createDto.Phone;
+
+            _mockRepository
+                .Setup(repo => repo.GenderExistsAsync(1))
+                .ReturnsAsync(true);
 
             _mockRepository
                 .Setup(repo => repo.CreateAsync(It.IsAny<Patient>()))
@@ -138,24 +128,38 @@ namespace MediLabo.Patients.Tests.Services
         }
 
         [Fact]
+        public async Task CreateAsync_InvalidGenderId_ReturnsFailure()
+        {
+            var createDto = new CreatePatientDto
+            {
+                FirstName = "New",
+                LastName = "Patient",
+                BirthDate = new DateTime(1995, 3, 20),
+                GenderId = 999
+            };
+
+            _mockRepository
+                .Setup(repo => repo.GenderExistsAsync(999))
+                .ReturnsAsync(false);
+
+            var result = await _service.CreateAsync(createDto);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("does not exist");
+        }
+
+        [Fact]
         public async Task UpdateAsync_ExistingPatient_ReturnsUpdatedPatient()
         {
             var patientId = 1;
-            var existingPatient = new Patient
-            {
-                Id = patientId,
-                FirstName = "Old",
-                LastName = "Name",
-                BirthDate = new DateTime(1990, 1, 1),
-                Gender = "M"
-            };
+            var existingPatient = CreateTestPatient(patientId, "Old", "Name", 1, "Homme");
 
             var updateDto = new CreatePatientDto
             {
                 FirstName = "Updated",
                 LastName = "Name",
                 BirthDate = new DateTime(1990, 1, 1),
-                Gender = "M",
+                GenderId = 1,
                 Address = "New Address",
                 Phone = "555-9999"
             };
@@ -163,6 +167,10 @@ namespace MediLabo.Patients.Tests.Services
             _mockRepository
                 .Setup(repo => repo.GetByIdAsync(patientId))
                 .ReturnsAsync(existingPatient);
+
+            _mockRepository
+                .Setup(repo => repo.GenderExistsAsync(1))
+                .ReturnsAsync(true);
 
             _mockRepository
                 .Setup(repo => repo.UpdateAsync(It.IsAny<Patient>()))
@@ -185,7 +193,7 @@ namespace MediLabo.Patients.Tests.Services
                 FirstName = "Updated",
                 LastName = "Name",
                 BirthDate = new DateTime(1990, 1, 1),
-                Gender = "M"
+                GenderId = 1
             };
 
             _mockRepository
@@ -196,6 +204,34 @@ namespace MediLabo.Patients.Tests.Services
 
             result.IsFailure.Should().BeTrue();
             result.Error.Should().Contain("not found");
+        }
+
+        [Fact]
+        public async Task UpdateAsync_InvalidGenderId_ReturnsFailure()
+        {
+            var patientId = 1;
+            var existingPatient = CreateTestPatient(patientId, "Old", "Name", 1, "Homme");
+
+            var updateDto = new CreatePatientDto
+            {
+                FirstName = "Updated",
+                LastName = "Name",
+                BirthDate = new DateTime(1990, 1, 1),
+                GenderId = 999
+            };
+
+            _mockRepository
+                .Setup(repo => repo.GetByIdAsync(patientId))
+                .ReturnsAsync(existingPatient);
+
+            _mockRepository
+                .Setup(repo => repo.GenderExistsAsync(999))
+                .ReturnsAsync(false);
+
+            var result = await _service.UpdateAsync(patientId, updateDto);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("does not exist");
         }
 
         [Fact]
@@ -225,6 +261,28 @@ namespace MediLabo.Patients.Tests.Services
             result.IsFailure.Should().BeTrue();
             result.Error.Should().Contain("not found");
             result.Error.Should().Contain(patientId.ToString());
+        }
+
+        [Fact]
+        public async Task GetAllGendersAsync_ReturnsListOfGenders()
+        {
+            var genders = new List<Gender>
+            {
+                new Gender { Id = 1, Name = "Homme" },
+                new Gender { Id = 2, Name = "Femme" },
+                new Gender { Id = 3, Name = "Autre" }
+            };
+
+            _mockRepository
+                .Setup(repo => repo.GetAllGendersAsync())
+                .ReturnsAsync(genders);
+
+            var result = await _service.GetAllGendersAsync();
+
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Should().HaveCount(3);
+            result.Value.Should().Contain(g => g.Name == "Homme");
         }
     }
 }

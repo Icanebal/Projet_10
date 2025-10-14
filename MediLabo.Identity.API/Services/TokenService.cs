@@ -1,4 +1,5 @@
 ﻿using MediLabo.Identity.API.Models;
+using MediLabo.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,7 +19,7 @@ namespace MediLabo.Identity.API.Services
             _userManager = userManager;
         }
 
-        public async Task<AuthResponse> GenerateTokenAsync(ApplicationUser user)
+        public async Task<AuthResponseDto> GenerateTokenAsync(ApplicationUser user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
 
@@ -55,7 +56,7 @@ namespace MediLabo.Identity.API.Services
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return new AuthResponse
+            return new AuthResponseDto
             {
                 Token = tokenString,
                 Expiration = expiration,

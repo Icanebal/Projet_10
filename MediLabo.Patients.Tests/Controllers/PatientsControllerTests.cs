@@ -1,12 +1,13 @@
-﻿using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Moq;
+using FluentAssertions;
+using MediLabo.Common;
 using MediLabo.Patients.API.Controllers;
 using MediLabo.Patients.API.Interfaces;
 using MediLabo.Patients.API.Models.DTOs;
 using MediLabo.Patients.API.Models.Entities;
 using MediLabo.Patients.API.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace MediLabo.Patients.Tests.Controllers
 {
@@ -26,19 +27,25 @@ namespace MediLabo.Patients.Tests.Controllers
             _controller = new PatientsController(_service);
         }
 
+        private Patient CreateTestPatient(int id, string firstName, string lastName, int genderId, string genderName)
+        {
+            return new Patient
+            {
+                Id = id,
+                FirstName = firstName,
+                LastName = lastName,
+                BirthDate = new DateTime(1990, 1, 1),
+                GenderId = genderId,
+                Gender = new Gender { Id = genderId, Name = genderName }
+            };
+        }
+
         [Fact]
         public async Task GetPatients_ReturnsOkResultWithPatients()
         {
             var patients = new List<Patient>
             {
-                new Patient
-                {
-                    Id = 1,
-                    FirstName = "John",
-                    LastName = "Doe",
-                    BirthDate = new DateTime(1990, 1, 1),
-                    Gender = "M"
-                }
+                CreateTestPatient(1, "John", "Doe", 1, "Homme")
             };
 
             _mockRepository
@@ -60,14 +67,7 @@ namespace MediLabo.Patients.Tests.Controllers
         [Fact]
         public async Task GetPatient_ExistingId_ReturnsOkResultWithPatient()
         {
-            var patient = new Patient
-            {
-                Id = 1,
-                FirstName = "John",
-                LastName = "Doe",
-                BirthDate = new DateTime(1990, 1, 1),
-                Gender = "M"
-            };
+            var patient = CreateTestPatient(1, "John", "Doe", 1, "Homme");
 
             _mockRepository
                 .Setup(r => r.GetByIdAsync(1))
@@ -107,17 +107,14 @@ namespace MediLabo.Patients.Tests.Controllers
                 FirstName = "New",
                 LastName = "Patient",
                 BirthDate = new DateTime(1995, 3, 20),
-                Gender = "M"
+                GenderId = 1
             };
 
-            var createdPatient = new Patient
-            {
-                Id = 5,
-                FirstName = "New",
-                LastName = "Patient",
-                BirthDate = new DateTime(1995, 3, 20),
-                Gender = "M"
-            };
+            var createdPatient = CreateTestPatient(5, "New", "Patient", 1, "Homme");
+
+            _mockRepository
+                .Setup(r => r.GenderExistsAsync(1))
+                .ReturnsAsync(true);
 
             _mockRepository
                 .Setup(r => r.CreateAsync(It.IsAny<Patient>()))
@@ -146,7 +143,7 @@ namespace MediLabo.Patients.Tests.Controllers
                 FirstName = "",
                 LastName = "Patient",
                 BirthDate = new DateTime(1995, 3, 20),
-                Gender = "M"
+                GenderId = 1
             };
 
             var result = await _controller.CreatePatient(createDto);
@@ -164,21 +161,18 @@ namespace MediLabo.Patients.Tests.Controllers
                 FirstName = "Updated",
                 LastName = "Patient",
                 BirthDate = new DateTime(1990, 1, 1),
-                Gender = "M"
+                GenderId = 1
             };
 
-            var existingPatient = new Patient
-            {
-                Id = 1,
-                FirstName = "Old",
-                LastName = "Name",
-                BirthDate = new DateTime(1990, 1, 1),
-                Gender = "M"
-            };
+            var existingPatient = CreateTestPatient(1, "Old", "Name", 1, "Homme");
 
             _mockRepository
                 .Setup(r => r.GetByIdAsync(1))
                 .ReturnsAsync(existingPatient);
+
+            _mockRepository
+                .Setup(r => r.GenderExistsAsync(1))
+                .ReturnsAsync(true);
 
             _mockRepository
                 .Setup(r => r.UpdateAsync(It.IsAny<Patient>()))
@@ -203,7 +197,7 @@ namespace MediLabo.Patients.Tests.Controllers
                 FirstName = "Updated",
                 LastName = "Patient",
                 BirthDate = new DateTime(1990, 1, 1),
-                Gender = "M"
+                GenderId = 1
             };
 
             _mockRepository
@@ -227,7 +221,7 @@ namespace MediLabo.Patients.Tests.Controllers
                 FirstName = "",
                 LastName = "Patient",
                 BirthDate = new DateTime(1990, 1, 1),
-                Gender = "M"
+                GenderId = 1
             };
 
             var result = await _controller.UpdatePatient(1, updateDto);
@@ -238,31 +232,43 @@ namespace MediLabo.Patients.Tests.Controllers
         }
 
         [Fact]
-        public async Task DeletePatient_ExistingId_ReturnsNoContent()
+        public async Task DeletePatient_ExistingId_ReturnsOkWithResult()
         {
+            var successResult = Result<bool>.Success(true);
             _mockRepository
                 .Setup(r => r.DeleteAsync(1))
                 .ReturnsAsync(true);
 
-            var result = await _controller.DeletePatient(1);
+            var actionResult = await _controller.DeletePatient(1);
 
-            var noContentResult = result as NoContentResult;
-            noContentResult.Should().NotBeNull();
-            noContentResult!.StatusCode.Should().Be(204);
+            var okResult = actionResult.Result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.StatusCode.Should().Be(200);
+
+            var result = okResult.Value as Result<bool>;
+            result.Should().NotBeNull();
+            result!.IsSuccess.Should().BeTrue();
+            result.Value.Should().BeTrue();
         }
 
         [Fact]
-        public async Task DeletePatient_NonExistingId_ReturnsNotFound()
+        public async Task DeletePatient_NonExistingId_ReturnsNotFoundWithResult()
         {
+            var failureResult = Result<bool>.Failure("Patient with ID 999 not found");
             _mockRepository
-                .Setup(r => r.DeleteAsync(999))
-                .ReturnsAsync(false);
+               .Setup(r => r.DeleteAsync(999))
+               .ReturnsAsync(false);
 
-            var result = await _controller.DeletePatient(999);
+            var actionResult = await _controller.DeletePatient(999);
 
-            var notFoundResult = result as NotFoundObjectResult;
+            var notFoundResult = actionResult.Result as NotFoundObjectResult;
             notFoundResult.Should().NotBeNull();
             notFoundResult!.StatusCode.Should().Be(404);
+
+            var result = notFoundResult.Value as Result<bool>;
+            result.Should().NotBeNull();
+            result!.IsFailure.Should().BeTrue();
+            result.Error.Should().Be("Patient with ID 999 not found");
         }
     }
 }

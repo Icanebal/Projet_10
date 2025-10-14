@@ -5,8 +5,8 @@ namespace MediLabo.Identity.API.Services
 {
     public interface IAuthService
     {
-        Task<Result<AuthResponse>> RegisterAsync(RegisterModel model);
+        Task<Result<AuthResponseDto>> RegisterAsync(RegisterModel model);
 
-        Task<Result<AuthResponse>> LoginAsync(LoginModel model);
+        Task<Result<AuthResponseDto>> LoginAsync(LoginModel model);
     }
 }

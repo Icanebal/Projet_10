@@ -2,11 +2,11 @@
 {
     public class UserDto
     {
-        public string Id { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public IList<string> Roles { get; set; } = new List<string>();
-        public DateTime CreatedAt { get; set; }
+        public required string Id { get; init; }
+        public required string Email { get; init; }
+        public required string FirstName { get; init; }
+        public required string LastName { get; init; }
+        public IList<string> Roles { get; init; } = new List<string>();
+        public DateTime CreatedAt { get; init; }
     }
 }

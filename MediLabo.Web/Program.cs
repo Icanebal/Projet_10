@@ -14,7 +14,7 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient<ApiService>(client =>
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
     var gatewayBaseUrl = builder.Configuration["Gateway:BaseUrl"];
     client.BaseAddress = new Uri(gatewayBaseUrl!);
