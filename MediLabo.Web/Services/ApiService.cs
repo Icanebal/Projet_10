@@ -23,8 +23,7 @@ public class ApiService : IApiService
 
         if (!string.IsNullOrEmpty(token))
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
     }
 
@@ -62,7 +61,6 @@ public class ApiService : IApiService
 
         var response = await _httpClient.DeleteAsync(endpoint);
 
-        // Pour DELETE, on retourne juste un bool (pas de body attendu en général)
         if (!response.IsSuccessStatusCode)
         {
             var errorMsg = $"HTTP {(int)response.StatusCode}: {response.ReasonPhrase}";

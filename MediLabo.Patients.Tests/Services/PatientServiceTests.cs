@@ -5,6 +5,7 @@ using MediLabo.Patients.API.Services;
 using MediLabo.Patients.API.Interfaces;
 using MediLabo.Patients.API.Models.Entities;
 using MediLabo.Patients.API.Models.DTOs;
+using MediLabo.Common;
 
 namespace MediLabo.Patients.Tests.Services
 {
@@ -36,7 +37,7 @@ namespace MediLabo.Patients.Tests.Services
         }
 
         [Fact]
-        public async Task GetAllAsync_ReturnsListOfPatients()
+        public async Task GetAllAsync_ReturnsSuccessWithListOfPatients()
         {
             var patients = new List<Patient>
             {
@@ -46,7 +47,7 @@ namespace MediLabo.Patients.Tests.Services
 
             _mockRepository
                 .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(patients);
+                .ReturnsAsync(Result<IEnumerable<Patient>>.Success(patients));
 
             var result = await _service.GetAllAsync();
 
@@ -57,7 +58,7 @@ namespace MediLabo.Patients.Tests.Services
         }
 
         [Fact]
-        public async Task GetByIdAsync_ExistingPatient_ReturnsPatientDto()
+        public async Task GetByIdAsync_ExistingPatient_ReturnsSuccessWithPatientDto()
         {
             var patientId = 1;
             var patient = CreateTestPatient(patientId, "John", "Doe", 1, "Homme");
@@ -66,7 +67,7 @@ namespace MediLabo.Patients.Tests.Services
 
             _mockRepository
                 .Setup(repo => repo.GetByIdAsync(patientId))
-                .ReturnsAsync(patient);
+                .ReturnsAsync(Result<Patient>.Success(patient));
 
             var result = await _service.GetByIdAsync(patientId);
 
@@ -84,17 +85,16 @@ namespace MediLabo.Patients.Tests.Services
             var patientId = 999;
             _mockRepository
                 .Setup(repo => repo.GetByIdAsync(patientId))
-                .ReturnsAsync((Patient?)null);
+                .ReturnsAsync(Result<Patient>.Failure("Patient not found"));
 
             var result = await _service.GetByIdAsync(patientId);
 
             result.IsFailure.Should().BeTrue();
-            result.Error.Should().Contain("not found");
-            result.Error.Should().Contain(patientId.ToString());
+            result.Error.Should().Be("Patient not found");
         }
 
         [Fact]
-        public async Task CreateAsync_ValidPatient_ReturnsCreatedPatient()
+        public async Task CreateAsync_ValidPatient_ReturnsSuccessWithCreatedPatient()
         {
             var createDto = new CreatePatientDto
             {
@@ -112,11 +112,11 @@ namespace MediLabo.Patients.Tests.Services
 
             _mockRepository
                 .Setup(repo => repo.GenderExistsAsync(1))
-                .ReturnsAsync(true);
+                .ReturnsAsync(Result<bool>.Success(true));
 
             _mockRepository
                 .Setup(repo => repo.CreateAsync(It.IsAny<Patient>()))
-                .ReturnsAsync(createdPatient);
+                .ReturnsAsync(Result<Patient>.Success(createdPatient));
 
             var result = await _service.CreateAsync(createDto);
 
@@ -140,16 +140,16 @@ namespace MediLabo.Patients.Tests.Services
 
             _mockRepository
                 .Setup(repo => repo.GenderExistsAsync(999))
-                .ReturnsAsync(false);
+                .ReturnsAsync(Result<bool>.Failure("Gender not found"));
 
             var result = await _service.CreateAsync(createDto);
 
             result.IsFailure.Should().BeTrue();
-            result.Error.Should().Contain("does not exist");
+            result.Error.Should().Be("Gender not found");
         }
 
         [Fact]
-        public async Task UpdateAsync_ExistingPatient_ReturnsUpdatedPatient()
+        public async Task UpdateAsync_ExistingPatient_ReturnsSuccessWithUpdatedPatient()
         {
             var patientId = 1;
             var existingPatient = CreateTestPatient(patientId, "Old", "Name", 1, "Homme");
@@ -166,15 +166,15 @@ namespace MediLabo.Patients.Tests.Services
 
             _mockRepository
                 .Setup(repo => repo.GetByIdAsync(patientId))
-                .ReturnsAsync(existingPatient);
+                .ReturnsAsync(Result<Patient>.Success(existingPatient));
 
             _mockRepository
                 .Setup(repo => repo.GenderExistsAsync(1))
-                .ReturnsAsync(true);
+                .ReturnsAsync(Result<bool>.Success(true));
 
             _mockRepository
                 .Setup(repo => repo.UpdateAsync(It.IsAny<Patient>()))
-                .ReturnsAsync((Patient p) => p);
+                .ReturnsAsync((Patient p) => Result<Patient>.Success(p));
 
             var result = await _service.UpdateAsync(patientId, updateDto);
 
@@ -198,12 +198,12 @@ namespace MediLabo.Patients.Tests.Services
 
             _mockRepository
                 .Setup(repo => repo.GetByIdAsync(patientId))
-                .ReturnsAsync((Patient?)null);
+                .ReturnsAsync(Result<Patient>.Failure("Patient not found"));
 
             var result = await _service.UpdateAsync(patientId, updateDto);
 
             result.IsFailure.Should().BeTrue();
-            result.Error.Should().Contain("not found");
+            result.Error.Should().Be("Patient not found");
         }
 
         [Fact]
@@ -222,16 +222,16 @@ namespace MediLabo.Patients.Tests.Services
 
             _mockRepository
                 .Setup(repo => repo.GetByIdAsync(patientId))
-                .ReturnsAsync(existingPatient);
+                .ReturnsAsync(Result<Patient>.Success(existingPatient));
 
             _mockRepository
                 .Setup(repo => repo.GenderExistsAsync(999))
-                .ReturnsAsync(false);
+                .ReturnsAsync(Result<bool>.Failure("Gender not found"));
 
             var result = await _service.UpdateAsync(patientId, updateDto);
 
             result.IsFailure.Should().BeTrue();
-            result.Error.Should().Contain("does not exist");
+            result.Error.Should().Be("Gender not found");
         }
 
         [Fact]
@@ -240,7 +240,7 @@ namespace MediLabo.Patients.Tests.Services
             var patientId = 1;
             _mockRepository
                 .Setup(repo => repo.DeleteAsync(patientId))
-                .ReturnsAsync(true);
+                .ReturnsAsync(Result<bool>.Success(true));
 
             var result = await _service.DeleteAsync(patientId);
 
@@ -254,17 +254,16 @@ namespace MediLabo.Patients.Tests.Services
             var patientId = 999;
             _mockRepository
                 .Setup(repo => repo.DeleteAsync(patientId))
-                .ReturnsAsync(false);
+                .ReturnsAsync(Result<bool>.Failure("Patient not found"));
 
             var result = await _service.DeleteAsync(patientId);
 
             result.IsFailure.Should().BeTrue();
-            result.Error.Should().Contain("not found");
-            result.Error.Should().Contain(patientId.ToString());
+            result.Error.Should().Be("Patient not found");
         }
 
         [Fact]
-        public async Task GetAllGendersAsync_ReturnsListOfGenders()
+        public async Task GetAllGendersAsync_ReturnsSuccessWithListOfGenders()
         {
             var genders = new List<Gender>
             {
@@ -275,7 +274,7 @@ namespace MediLabo.Patients.Tests.Services
 
             _mockRepository
                 .Setup(repo => repo.GetAllGendersAsync())
-                .ReturnsAsync(genders);
+                .ReturnsAsync(Result<IEnumerable<Gender>>.Success(genders));
 
             var result = await _service.GetAllGendersAsync();
 

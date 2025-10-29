@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MediLabo.Patients.API.Data;
 using MediLabo.Patients.API.Interfaces;
 using MediLabo.Patients.API.Models.Entities;
+using MediLabo.Common;
 
 namespace MediLabo.Patients.API.Repositories
 {
@@ -14,56 +15,85 @@ namespace MediLabo.Patients.API.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Patient>> GetAllAsync()
+        public async Task<Result<IEnumerable<Patient>>> GetAllAsync()
         {
-            return await _context.Patients
+            var patients = await _context.Patients
                 .Include(p => p.Gender)
                 .ToListAsync();
+
+            return Result<IEnumerable<Patient>>.Success(patients);
         }
 
-        public async Task<Patient?> GetByIdAsync(int id)
+        public async Task<Result<Patient>> GetByIdAsync(int id)
         {
-            return await _context.Patients
+            var patient = await _context.Patients
                 .Include(p => p.Gender)
                 .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (patient == null)
+            {
+                return Result<Patient>.Failure("Patient not found");
+            }
+
+            return Result<Patient>.Success(patient);
         }
 
-        public async Task<Patient> CreateAsync(Patient patient)
+        public async Task<Result<Patient>> CreateAsync(Patient patient)
         {
             _context.Patients.Add(patient);
             await _context.SaveChangesAsync();
             
-            return await GetByIdAsync(patient.Id) ?? patient;
+            var createdPatient = await _context.Patients
+                .Include(p => p.Gender)
+                .FirstOrDefaultAsync(p => p.Id == patient.Id);
+
+            return Result<Patient>.Success(createdPatient!);
         }
 
-        public async Task<Patient> UpdateAsync(Patient patient)
+        public async Task<Result<Patient>> UpdateAsync(Patient patient)
         {
             _context.Entry(patient).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             
-            return await GetByIdAsync(patient.Id) ?? patient;
+            var updatedPatient = await _context.Patients
+                .Include(p => p.Gender)
+                .FirstOrDefaultAsync(p => p.Id == patient.Id);
+
+            return Result<Patient>.Success(updatedPatient!);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<Result<bool>> DeleteAsync(int id)
         {
             var patient = await _context.Patients.FindAsync(id);
-            if (patient == null) return false;
+            
+            if (patient == null)
+            {
+                return Result<bool>.Failure("Patient not found");
+            }
 
             patient.IsDeleted = true;
             patient.DeletedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
-            return true;
+            return Result<bool>.Success(true);
         }
 
-        public async Task<IEnumerable<Gender>> GetAllGendersAsync()
+        public async Task<Result<IEnumerable<Gender>>> GetAllGendersAsync()
         {
-            return await _context.Genders.ToListAsync();
+            var genders = await _context.Genders.ToListAsync();
+            return Result<IEnumerable<Gender>>.Success(genders);
         }
 
-        public async Task<bool> GenderExistsAsync(int genderId)
+        public async Task<Result<bool>> GenderExistsAsync(int genderId)
         {
-            return await _context.Genders.AnyAsync(g => g.Id == genderId);
+            var exists = await _context.Genders.AnyAsync(g => g.Id == genderId);
+            
+            if (!exists)
+            {
+                return Result<bool>.Failure("Gender not found");
+            }
+
+            return Result<bool>.Success(true);
         }
     }
 }

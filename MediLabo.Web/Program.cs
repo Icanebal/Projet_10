@@ -24,6 +24,8 @@ builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<NoteService>();
+builder.Services.AddScoped<AssessmentService>();
 
 var app = builder.Build();
 

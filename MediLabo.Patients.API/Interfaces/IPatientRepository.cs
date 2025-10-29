@@ -1,15 +1,16 @@
-﻿using MediLabo.Patients.API.Models.Entities;
+using MediLabo.Patients.API.Models.Entities;
+using MediLabo.Common;
 
 namespace MediLabo.Patients.API.Interfaces
 {
     public interface IPatientRepository
     {
-        Task<IEnumerable<Patient>> GetAllAsync();
-        Task<Patient?> GetByIdAsync(int id);
-        Task<Patient> CreateAsync(Patient patient);
-        Task<Patient> UpdateAsync(Patient patient);
-        Task<bool> DeleteAsync(int id);
-        Task<IEnumerable<Gender>> GetAllGendersAsync();
-        Task<bool> GenderExistsAsync(int genderId);
+        Task<Result<IEnumerable<Patient>>> GetAllAsync();
+        Task<Result<Patient>> GetByIdAsync(int id);
+        Task<Result<Patient>> CreateAsync(Patient patient);
+        Task<Result<Patient>> UpdateAsync(Patient patient);
+        Task<Result<bool>> DeleteAsync(int id);
+        Task<Result<IEnumerable<Gender>>> GetAllGendersAsync();
+        Task<Result<bool>> GenderExistsAsync(int genderId);
     }
 }

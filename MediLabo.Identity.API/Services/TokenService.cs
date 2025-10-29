@@ -1,10 +1,10 @@
 ﻿using MediLabo.Identity.API.Models;
-using MediLabo.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using MediLabo.Common.DTOs;
 
 namespace MediLabo.Identity.API.Services
 {
@@ -58,6 +58,7 @@ namespace MediLabo.Identity.API.Services
 
             return new AuthResponseDto
             {
+                Id = user.Id,
                 Token = tokenString,
                 Expiration = expiration,
                 Email = user.Email!,

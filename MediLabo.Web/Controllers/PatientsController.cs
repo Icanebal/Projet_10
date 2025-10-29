@@ -2,30 +2,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MediLabo.Web.Services;
 using MediLabo.Web.Models.ViewModels;
+using MediLabo.Web.Extensions;
+using MediLabo.Web.Models;
 
 namespace MediLabo.Web.Controllers;
 
 public class PatientsController : Controller
 {
     private readonly PatientService _patientService;
+    private readonly AssessmentService _assessmentService;
     private readonly ILogger<PatientsController> _logger;
 
-    public PatientsController(PatientService patientService, ILogger<PatientsController> logger)
+    public PatientsController(PatientService patientService, ILogger<PatientsController> logger, AssessmentService assessmentService)
     {
         _patientService = patientService;
         _logger = logger;
+        _assessmentService = assessmentService;
     }
 
     public async Task<IActionResult> Index()
     {
-        _logger.LogInformation("Displaying patients list");
-
         var result = await _patientService.GetAllPatientsAsync();
 
         if (result.IsFailure)
         {
             _logger.LogError("Failed to retrieve patients: {Error}", result.Error);
-            TempData["ErrorMessage"] = result.Error ?? "Erreur lors de la récupération des patients";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Erreur lors de la récupération des patients"));
             return View(new List<PatientViewModel>());
         }
 
@@ -34,15 +36,23 @@ public class PatientsController : Controller
 
     public async Task<IActionResult> Details(int id)
     {
-        _logger.LogInformation("Displaying details for patient {PatientId}", id);
-
         var result = await _patientService.GetPatientByIdAsync(id);
 
         if (result.IsFailure)
         {
             _logger.LogError("Failed to retrieve patient {PatientId}: {Error}", id, result.Error);
-            TempData["ErrorMessage"] = result.Error ?? "Patient introuvable";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Patient introuvable"));
             return RedirectToAction(nameof(Index));
+        }
+
+        var riskResult = await _assessmentService.GetDiabetesRiskAsync(id);
+        if (riskResult.IsSuccess)
+        {
+            result.Value!.DiabetesRisk = riskResult.Value;
+        }
+        else
+        {
+            _logger.LogWarning("Could not retrieve diabetes risk for patient {PatientId}: {Error}", id, riskResult.Error);
         }
 
         return View(result.Value);
@@ -65,7 +75,6 @@ public class PatientsController : Controller
 
     public async Task<IActionResult> Create()
     {
-        _logger.LogInformation("Displaying create patient form");
         await LoadGendersAsync();
         return View();
     }
@@ -76,39 +85,35 @@ public class PatientsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            _logger.LogWarning("Create patient form validation failed");
             await LoadGendersAsync();
             return View(createPatientViewModel);
         }
 
-        _logger.LogInformation("Creating new patient: {FirstName} {LastName}",
-            createPatientViewModel.FirstName,
-            createPatientViewModel.LastName);
+        _logger.LogInformation("User creating patient: {FirstName} {LastName}",
+            createPatientViewModel.FirstName, createPatientViewModel.LastName);
 
         var result = await _patientService.CreatePatientAsync(createPatientViewModel);
 
         if (result.IsFailure)
         {
             _logger.LogError("Failed to create patient: {Error}", result.Error);
-            ModelState.AddModelError(string.Empty, result.Error ?? "Erreur lors de la création");
+            ModelState.AddModelError(string.Empty, "Erreur lors de la création du patient");
             await LoadGendersAsync();
             return View(createPatientViewModel);
         }
 
-        TempData["SuccessMessage"] = $"Patient {result.Value?.FullName} créé avec succès !";
+        TempData.AddToastMessage(new ToastMessage(ToastType.Success, $"Patient {result.Value?.FullName} créé avec succès !"));
         return RedirectToAction(nameof(Details), new { id = result.Value?.Id });
     }
 
     public async Task<IActionResult> Edit(int id)
     {
-        _logger.LogInformation("Displaying edit form for patient {PatientId}", id);
-
         var result = await _patientService.GetPatientByIdAsync(id);
 
         if (result.IsFailure)
         {
             _logger.LogError("Failed to retrieve patient {PatientId} for editing: {Error}", id, result.Error);
-            TempData["ErrorMessage"] = result.Error ?? "Patient introuvable";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Patient introuvable"));
             return RedirectToAction(nameof(Index));
         }
 
@@ -133,39 +138,36 @@ public class PatientsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            _logger.LogWarning("Edit patient form validation failed for patient {PatientId}", id);
             ViewData["PatientId"] = id;
             await LoadGendersAsync();
             return View(updatePatientViewModel);
         }
 
-        _logger.LogInformation("Updating patient {PatientId}", id);
+        _logger.LogInformation("User updating patient ID: {PatientId}", id);
 
         var result = await _patientService.UpdatePatientAsync(id, updatePatientViewModel);
 
         if (result.IsFailure)
         {
             _logger.LogError("Failed to update patient {PatientId}: {Error}", id, result.Error);
-            ModelState.AddModelError(string.Empty, result.Error ?? "Erreur lors de la modification");
+            ModelState.AddModelError(string.Empty, "Erreur lors de la mise à jour du patient");
             ViewData["PatientId"] = id;
             await LoadGendersAsync();
             return View(updatePatientViewModel);
         }
 
-        TempData["SuccessMessage"] = $"Patient {result.Value?.FullName} modifié avec succès !";
+        TempData.AddToastMessage(new ToastMessage(ToastType.Success, $"Patient {result.Value?.FullName} mis à jour avec succès !"));
         return RedirectToAction(nameof(Details), new { id });
     }
 
     public async Task<IActionResult> Delete(int id)
     {
-        _logger.LogInformation("Displaying delete confirmation for patient {PatientId}", id);
-
         var result = await _patientService.GetPatientByIdAsync(id);
 
         if (result.IsFailure)
         {
             _logger.LogError("Failed to retrieve patient {PatientId} for deletion: {Error}", id, result.Error);
-            TempData["ErrorMessage"] = result.Error ?? "Patient introuvable";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Patient introuvable"));
             return RedirectToAction(nameof(Index));
         }
 
@@ -176,18 +178,18 @@ public class PatientsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        _logger.LogInformation("Deleting patient {PatientId}", id);
+        _logger.LogInformation("User deleting patient ID: {PatientId}", id);
 
         var result = await _patientService.DeletePatientAsync(id);
 
         if (result.IsFailure)
         {
             _logger.LogError("Failed to delete patient {PatientId}: {Error}", id, result.Error);
-            TempData["ErrorMessage"] = result.Error ?? "Erreur lors de la suppression";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Erreur lors de la suppression du patient"));
             return RedirectToAction(nameof(Index));
         }
 
-        TempData["SuccessMessage"] = "Patient supprimé avec succès !";
+        TempData.AddToastMessage(new ToastMessage(ToastType.Success, "Patient supprimé avec succès"));
         return RedirectToAction(nameof(Index));
     }
 }

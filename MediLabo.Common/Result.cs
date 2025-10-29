@@ -1,19 +1,15 @@
-﻿using System.Text.Json.Serialization;
-
-namespace MediLabo.Common
+﻿namespace MediLabo.Common
 {
     public class Result<T>
     {
         public bool IsSuccess { get; set; }
 
-        [JsonIgnore]
         public bool IsFailure => !IsSuccess;
 
         public T? Value { get; set; }
 
         public List<string> Errors { get; set; } = new List<string>();
 
-        [JsonIgnore]
         public string? Error => Errors.FirstOrDefault();
 
         public Result()

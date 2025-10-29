@@ -1,4 +1,5 @@
 using MediLabo.Common;
+using MediLabo.Common.DTOs;
 
 namespace MediLabo.Web.Services;
 
@@ -22,7 +23,6 @@ public class AuthService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    // Authentifie un utilisateur et stocke le token en session
     public async Task<Result<string>> LoginAsync(string username, string password)
     {
         _logger.LogInformation("Login attempt for user {Username}", username);
@@ -57,7 +57,6 @@ public class AuthService
         return Result<string>.Failure(result.Error ?? "Unknown error");
     }
 
-    // Déconnecte l'utilisateur en supprimant les données de session
     public void Logout()
     {
         var session = _httpContextAccessor.HttpContext?.Session;
@@ -70,7 +69,6 @@ public class AuthService
         session?.Remove(UserRoleSessionKey);
     }
 
-    // Enregistre un nouvel utilisateur
     public async Task<Result<string>> RegisterAsync(string email, string password, string firstName, string lastName, string role)
     {
         _logger.LogInformation("Registering new user with email {Email}", email);

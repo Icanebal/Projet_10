@@ -1,51 +1,46 @@
-﻿<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11000;">
+@using MediLabo.Web.Extensions
+@using MediLabo.Web.Models
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
-            <div class="d-flex">
-                <div class="toast-body">
-                    <strong>✓</strong> @TempData["SuccessMessage"]
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    }
+@{
+    var toastMessages = TempData.GetToastMessages();
+}
 
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
-            <div class="d-flex">
-                <div class="toast-body">
-                    <strong>✕</strong> @TempData["ErrorMessage"]
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    }
-
-    @if (TempData["InfoMessage"] != null)
-    {
-        <div class="toast align-items-center text-white bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
-            <div class="d-flex">
-                <div class="toast-body">
-                    <strong>ℹ</strong> @TempData["InfoMessage"]
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    }
-
-</div>
-
-@if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null || TempData["InfoMessage"] != null)
+@if (toastMessages.Any())
 {
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11000;">
+        @foreach (var toast in toastMessages)
+        {
+            var cssClass = toast.Type switch
+            {
+                ToastType.Success => "bg-success",
+                ToastType.Error => "bg-danger",
+                ToastType.Info => "bg-info",
+                _ => "bg-secondary"
+            };
+
+            var icon = toast.Type switch
+            {
+                ToastType.Success => "✓",
+                ToastType.Error => "✕",
+                ToastType.Info => "ℹ",
+                _ => "•"
+            };
+
+            <div class="toast align-items-center text-white @cssClass border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <strong>@icon</strong> @toast.Message
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Sélectionner tous les toasts
             var toastElements = document.querySelectorAll('.toast');
-
-            // Initialiser et afficher chaque toast
+            
             toastElements.forEach(function(toastElement) {
                 var toast = new bootstrap.Toast(toastElement, {
                     autohide: true,
