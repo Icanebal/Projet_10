@@ -1,5 +1,6 @@
 ﻿using MediLabo.Common;
 using MediLabo.Common.Models;
+using MediLabo.Common.HttpServices;
 
 namespace MediLabo.Web.Services;
 

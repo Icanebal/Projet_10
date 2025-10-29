@@ -1,29 +1,22 @@
 ﻿using MediLabo.Assessments.API.Calculators;
 using MediLabo.Assessments.API.Models;
 using MediLabo.Common;
+using MediLabo.Common.DTOs;
 using MediLabo.Common.HttpServices;
 
 namespace MediLabo.Assessments.API.Services;
 
 public class DiabetesRiskService
 {
-    private readonly IPatientApiService _patientApiService;
-    private readonly INoteApiService _noteApiService;
+    private readonly IApiService _apiService;
     private readonly AgeCalculator _ageCalculator;
     private readonly TriggerTermsCalculator _triggerTermsCalculator;
     private readonly DiabetesRiskCalculator _diabetesRiskCalculator;
     private readonly ILogger<DiabetesRiskService> _logger;
 
-    public DiabetesRiskService(
-        IPatientApiService patientApiService,
-        INoteApiService noteApiService,
-        AgeCalculator ageCalculator,
-        TriggerTermsCalculator triggerTermsCalculator,
-        DiabetesRiskCalculator diabetesRiskCalculator,
-        ILogger<DiabetesRiskService> logger)
+    public DiabetesRiskService(IApiService apiService, AgeCalculator ageCalculator, TriggerTermsCalculator triggerTermsCalculator, DiabetesRiskCalculator diabetesRiskCalculator, ILogger<DiabetesRiskService> logger)
     {
-        _patientApiService = patientApiService;
-        _noteApiService = noteApiService;
+        _apiService = apiService;
         _ageCalculator = ageCalculator;
         _triggerTermsCalculator = triggerTermsCalculator;
         _diabetesRiskCalculator = diabetesRiskCalculator;
@@ -34,7 +27,8 @@ public class DiabetesRiskService
     {
         _logger.LogInformation("Calculating diabetes risk for patient {PatientId}", patientId);
 
-        var patientResult = await _patientApiService.GetPatientMedicalInfoAsync(patientId);
+        var patientResult = await _apiService.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}");
+
         if (!patientResult.IsSuccess)
         {
             _logger.LogWarning("Failed to retrieve patient {PatientId}: {Error}", patientId, patientResult.Error);
@@ -43,7 +37,8 @@ public class DiabetesRiskService
 
         var patient = patientResult.Value!;
 
-        var notesResult = await _noteApiService.GetNotesByPatientIdAsync(patientId);
+        var notesResult = await _apiService.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}");
+
         if (!notesResult.IsSuccess)
         {
             _logger.LogWarning("Failed to retrieve notes for patient {PatientId}: {Error}", patientId, notesResult.Error);

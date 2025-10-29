@@ -7,7 +7,6 @@ using MediLabo.Notes.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using MediLabo.Common.Handler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,14 +14,12 @@ builder.Services.AddControllers();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddTransient<AuthenticationDelegatingHandler>();
-
-builder.Services.AddHttpClient<IPatientApiService, PatientApiService>(client =>
+builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["Services:Gateway"] ?? "https://localhost:5000/");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
-})
-.AddHttpMessageHandler<AuthenticationDelegatingHandler>();
+});
 
 var mongoConnectionString = builder.Configuration.GetSection("MongoDbSettings:ConnectionString").Value!;
 var mongoDatabaseName = builder.Configuration.GetSection("MongoDbSettings:DatabaseName").Value!;

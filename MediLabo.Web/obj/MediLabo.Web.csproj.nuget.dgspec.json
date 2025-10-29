@@ -54,6 +54,10 @@
               "target": "Package",
               "version": "[2.3.0, )"
             },
+            "Microsoft.AspNetCore.Http.Extensions": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
             "Microsoft.Extensions.Http": {
               "target": "Package",
               "version": "[9.0.0, )"

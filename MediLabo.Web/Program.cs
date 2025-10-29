@@ -1,4 +1,5 @@
 using MediLabo.Web.Services;
+using MediLabo.Common.HttpServices;
 
 var builder = WebApplication.CreateBuilder(args);
 

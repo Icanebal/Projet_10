@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MediLabo.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+485462f46a3c2802ce434bdb5deea3ca1d8306b2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9e1f76934c1281fd168623f9212fcac0007dcd69")]
 [assembly: System.Reflection.AssemblyProductAttribute("MediLabo.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MediLabo.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

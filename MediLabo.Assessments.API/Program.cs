@@ -1,6 +1,5 @@
 using System.Text;
 using MediLabo.Assessments.API.Calculators;
-using MediLabo.Common.Handler;
 using MediLabo.Assessments.API.Services;
 using MediLabo.Common.HttpServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,23 +11,12 @@ builder.Services.AddControllers();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddTransient<AuthenticationDelegatingHandler>();
-
-var gatewayUrl = builder.Configuration["Services:Gateway"] ?? "https://localhost:5000/";
-
-builder.Services.AddHttpClient<IPatientApiService, PatientApiService>(client =>
+builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
-    client.BaseAddress = new Uri(gatewayUrl);
+    client.BaseAddress = new Uri(builder.Configuration["Services:Gateway"] ?? "https://localhost:5000/");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
-})
-.AddHttpMessageHandler<AuthenticationDelegatingHandler>();
-
-builder.Services.AddHttpClient<INoteApiService, NoteApiService>(client =>
-{
-    client.BaseAddress = new Uri(gatewayUrl);
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
-})
-.AddHttpMessageHandler<AuthenticationDelegatingHandler>();
+});
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"]!;

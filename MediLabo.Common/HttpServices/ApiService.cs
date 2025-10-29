@@ -1,8 +1,10 @@
-﻿using System.Net.Http.Headers;
-using MediLabo.Common;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
-namespace MediLabo.Web.Services;
+namespace MediLabo.Common.HttpServices;
 
 public class ApiService : IApiService
 {
@@ -15,16 +17,6 @@ public class ApiService : IApiService
         _httpClient = httpClient;
         _logger = logger;
         _httpContextAccessor = httpContextAccessor;
-    }
-
-    private void AddAuthorizationHeader()
-    {
-        var token = _httpContextAccessor.HttpContext?.Session.GetString("JwtToken");
-
-        if (!string.IsNullOrEmpty(token))
-        {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
     }
 
     public async Task<Result<T>> GetAsync<T>(string endpoint)
@@ -70,6 +62,44 @@ public class ApiService : IApiService
 
         _logger.LogInformation("DELETE request to {Endpoint} succeeded", endpoint);
         return Result<bool>.Success(true);
+    }
+
+    private void AddAuthorizationHeader()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null) return;
+
+        string? token = null;
+
+        token = httpContext.Request.Headers["Authorization"].ToString();
+
+        if (string.IsNullOrEmpty(token))
+        {
+            var sessionFeature = httpContext.Features.Get<Microsoft.AspNetCore.Http.Features.ISessionFeature>();
+            if (sessionFeature?.Session != null)
+            {
+                token = httpContext.Session.GetString("JwtToken");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    _logger.LogDebug("Token retrieved from session");
+                }
+            }
+        }
+        else
+        {
+            _logger.LogDebug("Token retrieved from request headers");
+        }
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            var cleanToken = token.Replace("Bearer ", "").Trim();
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", cleanToken);
+        }
+        else
+        {
+            _logger.LogWarning("No authorization token found");
+        }
     }
 
     private async Task<Result<T>> ProcessApiResponse<T>(HttpResponseMessage response, string endpoint, string method)
