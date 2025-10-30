@@ -2,6 +2,7 @@
 @model MediLabo.Web.Models.ViewModels.CreateNoteViewModel
 @{
     ViewData["Title"] = "Modifier la note";
+    var patient = ViewBag.Patient as PatientViewModel;
     var noteId = ViewBag.NoteId as string;
     var note = ViewBag.Note as NoteViewModel;
 }
@@ -13,7 +14,7 @@
                 <div class="card-header">
                     <h4>Modifier la note</h4>
                     <p class="mb-0 text-muted">
-                        Patient : <strong>@note?.PatientName</strong> |
+                        Patient : <strong>@patient?.FullName</strong> |
                         Créée le : @note?.CreatedAt.ToString("dd/MM/yyyy HH:mm")
                     </p>
                 </div>

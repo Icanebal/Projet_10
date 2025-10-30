@@ -101,12 +101,21 @@ public class NotesController : Controller
 
         var note = noteResult.Value!;
 
+        var patientResult = await _patientService.GetPatientByIdAsync(note.PatientId);
+
+        if (patientResult.IsFailure)
+        {
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Patient introuvable"));
+            return RedirectToAction("Index", "Patients");
+        }
+
         var model = new CreateNoteViewModel
         {
             PatientId = note.PatientId,
             Content = note.Content
         };
 
+        ViewBag.Patient = patientResult.Value;
         ViewBag.NoteId = id;
         ViewBag.Note = note;
 

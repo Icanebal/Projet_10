@@ -12,7 +12,6 @@ public static class Mapping
         {
             Id = note.Id!,
             PatientId = note.PatientId,
-            PatientName = patientName,
             Content = note.Content,
             CreatedAt = note.CreatedAt
         };

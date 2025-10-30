@@ -49,7 +49,7 @@ public class DiabetesRiskServiceTests
 
         var notes = new List<NoteDto>
         {
-            new () { Id = "1",  PatientName = "TestNone Test", PatientId = patientId, Content = "Le patient se sent bien. Poids normal.", CreatedAt = DateTime.UtcNow }
+            new () { Id = "1", PatientId = patientId, Content = "Le patient se sent bien. Poids normal.", CreatedAt = DateTime.UtcNow }
         };
 
         _mockApiService
@@ -88,7 +88,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "1",
                 PatientId = patientId,
-                PatientName = "TestBorderline Test",
                 Content = "Stress et audition anormale",
                 CreatedAt = DateTime.UtcNow
             },
@@ -96,7 +95,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "2",
                 PatientId = patientId,
-                PatientName = "TestBorderline Test",
                 Content = "Réaction aux médicaments",
                 CreatedAt = DateTime.UtcNow.AddDays(-1)
             }
@@ -136,7 +134,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "1",
                 PatientId = patientId,
-                PatientName = "TestInDanger Test",
                 Content = "Patient fumeur",
                 CreatedAt = DateTime.UtcNow
             },
@@ -144,7 +141,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "2",
                 PatientId = patientId,
-                PatientName = "TestInDanger Test",
                 Content = "Cholestérol élevé, audition anormale",
                 CreatedAt = DateTime.UtcNow.AddDays(-5)
             }
@@ -184,7 +180,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "1",
                 PatientId = patientId,
-                PatientName = "TestEarlyOnset Test",
                 Content = "Anticorps élevés, Réaction",
                 CreatedAt = DateTime.UtcNow
             },
@@ -192,7 +187,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "2",
                 PatientId = patientId,
-                PatientName = "TestEarlyOnset Test",
                 Content = "Fumeur, Hémoglobine A1C élevée",
                 CreatedAt = DateTime.UtcNow.AddDays(-1)
             },
@@ -200,7 +194,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "3",
                 PatientId = patientId,
-                PatientName = "TestEarlyOnset Test",
                 Content = "Taille, Poids, Cholestérol élevé",
                 CreatedAt = DateTime.UtcNow.AddDays(-2)
             },
@@ -208,7 +201,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "4",
                 PatientId = patientId,
-                PatientName = "TestEarlyOnset Test",
                 Content = "Vertige et Réaction aux médicaments",
                 CreatedAt = DateTime.UtcNow.AddDays(-3)
             }
@@ -331,7 +323,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "1",
                 PatientId = patientId,
-                PatientName = "Test Patient",
                 Content = "Note",
                 CreatedAt = DateTime.UtcNow
             }
@@ -371,7 +362,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "1",
                 PatientId = patientId,
-                PatientName = "Test Patient",
                 Content = "Note",
                 CreatedAt = DateTime.UtcNow
             }
