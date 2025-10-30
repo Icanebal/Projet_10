@@ -34,6 +34,10 @@
 
                         <dt class="col-sm-4">Âge</dt>
                         <dd class="col-sm-8">@Model.Age ans</dd>
+                        <dt class="col-sm-4">Risque de diabète</dt>
+                        <dd class="col-sm-8">
+                            <span class="@Model.DiabetesRiskBadgeClass">@Model.DiabetesRiskLabel</span>
+                        </dd>
                     </dl>
                 </div>
 
@@ -55,6 +59,8 @@
             </div>
         </div>
         <div class="card-footer">
+            <a asp-controller="Notes" asp-action="PatientNotes" asp-route-id="@Model.Id" class="btn btn-info">
+                <i class="bi bi-journal-medical"></i> Voir les notes médicales</a>
             <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Modifier ce patient</a>
             @if(isAdmin)
             {

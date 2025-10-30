@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using MediLabo.Web.Services;
 using MediLabo.Web.Models.ViewModels;
+using MediLabo.Web.Extensions;
+using MediLabo.Web.Models;
 
 namespace MediLabo.Web.Controllers;
 
@@ -48,7 +50,7 @@ public class AccountController : Controller
         }
 
         _logger.LogInformation("User {Username} logged in successfully", loginViewModel.Username);
-        TempData["SuccessMessage"] = "Connexion réussie !";
+        TempData.AddToastMessage(new ToastMessage(ToastType.Success, "Connexion réussie"));
 
         if (!string.IsNullOrEmpty(loginViewModel.ReturnUrl) && Url.IsLocalUrl(loginViewModel.ReturnUrl))
         {
@@ -67,7 +69,7 @@ public class AccountController : Controller
 
         _authService.Logout();
 
-        TempData["SuccessMessage"] = "Déconnexion réussie";
+        TempData.AddToastMessage(new ToastMessage(ToastType.Success, "Déconnexion réussie"));
         return RedirectToAction("Login");
     }
 
@@ -76,13 +78,13 @@ public class AccountController : Controller
     {
         if (!_authService.IsAuthenticated())
         {
-            TempData["ErrorMessage"] = "Vous devez être connecté pour accéder à cette page";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Vous devez être connecté pour accéder à cette page"));
             return RedirectToAction("Login");
         }
 
         if (!_authService.IsAdmin())
         {
-            TempData["ErrorMessage"] = "Accès refusé : vous devez être administrateur";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Accès refusé : vous devez être administrateur"));
             return RedirectToAction("Index", "Home");
         }
 
@@ -95,13 +97,13 @@ public class AccountController : Controller
     {
         if (!_authService.IsAuthenticated())
         {
-            TempData["ErrorMessage"] = "Vous devez être connecté pour accéder à cette page";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Vous devez être connecté pour accéder à cette page"));
             return RedirectToAction("Login");
         }
 
         if (!_authService.IsAdmin())
         {
-            TempData["ErrorMessage"] = "Accès refusé : vous devez être administrateur";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Accès refusé : vous devez être administrateur"));
             return RedirectToAction("Index", "Home");
         }
 
@@ -127,7 +129,7 @@ public class AccountController : Controller
         }
 
         _logger.LogInformation("User {Email} registered successfully", registerViewModel.Email);
-        TempData["SuccessMessage"] = $"Utilisateur {registerViewModel.Email} créé avec succès !";
+        TempData.AddToastMessage(new ToastMessage(ToastType.Success, "Utilisateur créé avec succès"));
         return RedirectToAction("Index", "Users");
     }
 }

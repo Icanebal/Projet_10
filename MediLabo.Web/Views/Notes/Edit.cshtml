@@ -1,0 +1,48 @@
+﻿@using MediLabo.Web.Models.ViewModels
+@model MediLabo.Web.Models.ViewModels.CreateNoteViewModel
+@{
+    ViewData["Title"] = "Modifier la note";
+    var noteId = ViewBag.NoteId as string;
+    var note = ViewBag.Note as NoteViewModel;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Modifier la note</h4>
+                    <p class="mb-0 text-muted">
+                        Patient : <strong>@note?.PatientName</strong> |
+                        Créée le : @note?.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                    </p>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" asp-route-id="@noteId" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="PatientId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Content" class="form-label">Contenu de la note</label>
+                            <textarea asp-for="Content" class="form-control" rows="10"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="PatientNotes" asp-route-id="@Model.PatientId" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Enregistrer les modifications
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

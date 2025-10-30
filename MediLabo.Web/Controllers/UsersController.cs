@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using MediLabo.Web.Services;
+using MediLabo.Web.Extensions;
+using MediLabo.Web.Models.ViewModels;
+using MediLabo.Web.Models;
 
 namespace MediLabo.Web.Controllers;
 public class UsersController : Controller
@@ -22,7 +25,7 @@ public class UsersController : Controller
     {
         if (!_authService.IsAdmin())
         {
-            TempData["ErrorMessage"] = "Accès refusé : vous devez être administrateur";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Accès refusé. Vous n'avez pas les permissions nécessaires."));
             return false;
         }
         return true;
@@ -40,8 +43,8 @@ public class UsersController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to retrieve users: {Error}", result.Error);
-            TempData["ErrorMessage"] = result.Error ?? "Erreur lors de la récupération des utilisateurs";
-            return View(new List<MediLabo.Web.Models.ViewModels.UserViewModel>());
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Erreur lors de la récupération des utilisateurs"));
+            return View(new List<UserViewModel>());
         }
 
         return View(result.Value);
@@ -58,7 +61,7 @@ public class UsersController : Controller
 
         if (usersResult.IsFailure)
         {
-            TempData["ErrorMessage"] = "Erreur lors de la récupération de l'utilisateur";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Erreur lors de la récupération des utilisateurs"));
             return RedirectToAction(nameof(Index));
         }
 
@@ -66,7 +69,7 @@ public class UsersController : Controller
 
         if (user == null)
         {
-            TempData["ErrorMessage"] = "Utilisateur introuvable";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Utilisateur introuvable"));
             return RedirectToAction(nameof(Index));
         }
 
@@ -87,11 +90,11 @@ public class UsersController : Controller
         if (result.IsFailure)
         {
             _logger.LogError("Failed to delete user {UserId}: {Error}", id, result.Error);
-            TempData["ErrorMessage"] = result.Error ?? "Erreur lors de la suppression";
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Erreur lors de la suppression de l'utilisateur"));
             return RedirectToAction(nameof(Index));
         }
 
-        TempData["SuccessMessage"] = "Utilisateur supprimé avec succès !";
+        TempData.AddToastMessage(new ToastMessage(ToastType.Success, "Utilisateur supprimé avec succès"));
         return RedirectToAction(nameof(Index));
     }
 }

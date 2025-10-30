@@ -2,7 +2,7 @@
 using MediLabo.Identity.API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using MediLabo.Common;
+using MediLabo.Common.DTOs;
 using Moq;
 
 namespace MediLabo.Identity.Tests.Services
@@ -52,14 +52,14 @@ namespace MediLabo.Identity.Tests.Services
             _userManagerMock.Setup(m => m.AddToRoleAsync(It.IsAny<ApplicationUser>(), model.Role))
                 .ReturnsAsync(IdentityResult.Success);
 
-            var authResponse = new AuthResponseDto { Token = "fake-token", Email = model.Email, FirstName = "John", LastName = "Doe"};
+            var authResponse = new AuthResponseDto { Id = "user-id", Token = "fake-token", Email = model.Email, FirstName = "John", LastName = "Doe"};
             _tokenServiceMock.Setup(t => t.GenerateTokenAsync(It.IsAny<ApplicationUser>()))
                 .ReturnsAsync(authResponse);
 
             var result = await _authService.RegisterAsync(model);
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("fake-token", result.Value.Token);
+            Assert.Equal("fake-token", result.Value!.Token);
         }
 
         [Fact]
@@ -107,12 +107,12 @@ namespace MediLabo.Identity.Tests.Services
                 .Verifiable();
 
             _tokenServiceMock.Setup(t => t.GenerateTokenAsync(It.IsAny<ApplicationUser>()))
-                .ReturnsAsync(new AuthResponseDto { Token = "default-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
+                .ReturnsAsync(new AuthResponseDto { Id = "user-id", Token = "default-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
 
             var result = await _authService.RegisterAsync(model);
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("default-token", result.Value.Token);
+            Assert.Equal("default-token", result.Value!.Token);
             _userManagerMock.Verify(m => m.AddToRoleAsync(It.IsAny<ApplicationUser>(), "User"), Times.Once);
         }
 
@@ -126,12 +126,12 @@ namespace MediLabo.Identity.Tests.Services
             _signInManagerMock.Setup(m => m.CheckPasswordSignInAsync(user, model.Password, false))
                 .ReturnsAsync(SignInResult.Success);
             _tokenServiceMock.Setup(t => t.GenerateTokenAsync(user))
-                .ReturnsAsync(new AuthResponseDto { Token = "login-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
+                .ReturnsAsync(new AuthResponseDto { Id = "user-id", Token = "login-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
 
             var result = await _authService.LoginAsync(model);
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("login-token", result.Value.Token);
+            Assert.Equal("login-token", result.Value!.Token);
         }
 
         [Fact]
@@ -173,12 +173,12 @@ namespace MediLabo.Identity.Tests.Services
             _signInManagerMock.Setup(m => m.CheckPasswordSignInAsync(user, model.Password, false))
                 .ReturnsAsync(SignInResult.Success);
             _tokenServiceMock.Setup(t => t.GenerateTokenAsync(user))
-                .ReturnsAsync(new AuthResponseDto { Token = "jwt-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
+                .ReturnsAsync(new AuthResponseDto { Id = "user-id", Token = "jwt-token", Email = model.Email, FirstName = "John", LastName = "Doe" });
 
             var result = await _authService.LoginAsync(model);
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("jwt-token", result.Value.Token);
+            Assert.Equal("jwt-token", result.Value!.Token);
         }
 
         [Fact]
@@ -191,13 +191,13 @@ namespace MediLabo.Identity.Tests.Services
             _signInManagerMock.Setup(m => m.CheckPasswordSignInAsync(user, model.Password, false))
                 .ReturnsAsync(SignInResult.Success);
 
-            var authResponse = new AuthResponseDto { Token = "fake-token", Email = model.Email, FirstName = "John", LastName = "Doe", Roles = new List<string> { "Admin", "User" } };
+            var authResponse = new AuthResponseDto { Id = "user-id", Token = "fake-token", Email = model.Email, FirstName = "John", LastName = "Doe", Roles = new List<string> { "Admin", "User" } };
         _tokenServiceMock.Setup(t => t.GenerateTokenAsync(user)).ReturnsAsync(authResponse);
 
             var result = await _authService.LoginAsync(model);
 
             Assert.True(result.IsSuccess);
-            Assert.Contains("Admin", result.Value.Roles);
+            Assert.Contains("Admin", result.Value!.Roles);
             Assert.Contains("User", result.Value.Roles);
         }
     }

@@ -2,14 +2,14 @@
 {
     public class PatientDto
     {
-        public int Id { get; set; }
-        public required string FirstName { get; set; }
-        public required string LastName { get; set; }
-        public DateTime BirthDate { get; set; }
-        public int GenderId { get; set; }
-        public required string GenderName { get; set; }
-        public string? Address { get; set; }
-        public string? Phone { get; set; }
+        public int Id { get; init; }
+        public required string FirstName { get; init; }
+        public required string LastName { get; init; }
+        public DateTime BirthDate { get; init; }
+        public int GenderId { get; init; }
+        public required string GenderName { get; init; }
+        public string? Address { get; init; }
+        public string? Phone { get; init; }
 
         public string FullName => $"{FirstName} {LastName}";
     }

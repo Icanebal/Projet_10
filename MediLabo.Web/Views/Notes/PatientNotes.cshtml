@@ -1,0 +1,87 @@
+﻿@using MediLabo.Web.Models.ViewModels
+@{
+    ViewData["Title"] = "Notes du patient";
+    var patient = ViewBag.Patient as PatientViewModel;
+    var notes = ViewBag.Notes as IEnumerable<NoteViewModel>;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Notes médicales</h2>
+            <p class="text-muted">
+                Patient : <strong>@patient?.FirstName @patient?.LastName</strong>
+                (@patient?.BirthDate.ToShortDateString())
+            </p>
+        </div>
+        <div>
+            <a asp-action="Create" asp-route-patientId="@patient?.Id" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nouvelle note
+            </a>
+            <a asp-controller="Patients" asp-action="Details" asp-route-id="@patient?.Id" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Retour au patient
+            </a>
+        </div>
+    </div>
+
+    @if (notes != null && notes.Any())
+    {
+        <div class="row">
+            @foreach (var note in notes.OrderByDescending(n => n.CreatedAt))
+            {
+                <div class="col-md-12 mb-3">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="bi bi-calendar"></i>
+                                @note.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                            </span>
+                            <div>
+                                <a asp-action="Edit" asp-route-id="@note.Id" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@note.Id">
+                                    <i class="bi bi-trash"></i> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text" style="white-space: pre-wrap;">@note.Content</p>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="deleteModal-@note.Id" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirmer la suppression</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Êtes-vous sûr de vouloir supprimer cette note ?</p>
+                                    <div class="mt-2 p-2 bg-light rounded">
+                                        <small class="text-muted">Créée le @note.CreatedAt.ToString("dd/MM/yyyy à HH:mm")</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                    <form asp-action="Delete" asp-route-id="@note.Id" asp-route-patientId="@patient?.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Aucune note pour ce patient. <a asp-action="Create" asp-route-patientId="@patient?.Id">Créer la première note</a>
+        </div>
+    }
+</div>

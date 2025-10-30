@@ -1,7 +1,8 @@
-namespace MediLabo.Common
+namespace MediLabo.Common.DTOs
 {
     public class AuthResponseDto
     {
+        public required string Id { get; set; }
         public required string Token { get; set; }
         public DateTime Expiration { get; set; }
         public required string Email { get; set; }

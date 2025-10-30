@@ -11,11 +11,6 @@
     <PackageReference Include="Ocelot" Version="24.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Models\" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<Content Update="ocelot.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -18,96 +18,125 @@ namespace MediLabo.Patients.API.Services
 
         public async Task<Result<IEnumerable<PatientDto>>> GetAllAsync()
         {
-            _logger.LogInformation("Attempting to retrieve all patients");
+            _logger.LogInformation("Retrieving all patients");
 
-            var patients = await _patientRepository.GetAllAsync();
-            var patientDtos = Mapping.MapToDtoCollection(patients);
+            var result = await _patientRepository.GetAllAsync();
 
+            if (!result.IsSuccess)
+            {
+                _logger.LogWarning("Failed to retrieve patients. Error: {Error}", result.Error);
+                return Result<IEnumerable<PatientDto>>.Failure(result.Error!);
+            }
+
+            var patientDtos = Mapping.MapToDtoCollection(result.Value!);
             _logger.LogInformation("Successfully retrieved {PatientCount} patients", patientDtos.Count());
+
             return Result<IEnumerable<PatientDto>>.Success(patientDtos);
         }
 
         public async Task<Result<PatientDto>> GetByIdAsync(int id)
         {
-            _logger.LogInformation("Attempting to retrieve patient with ID {PatientId}", id);
+            _logger.LogInformation("Retrieving patient ID: {PatientId}", id);
 
-            var patient = await _patientRepository.GetByIdAsync(id);
-            if (patient == null)
+            var result = await _patientRepository.GetByIdAsync(id);
+
+            if (!result.IsSuccess)
             {
-                _logger.LogWarning("Patient with ID {PatientId} not found", id);
-                return Result<PatientDto>.Failure($"Patient with ID {id} not found");
+                _logger.LogWarning("Failed to retrieve patient ID: {PatientId}. Error: {Error}", id, result.Error);
+                return Result<PatientDto>.Failure(result.Error!);
             }
 
-            _logger.LogInformation("Successfully retrieved patient with ID {PatientId}", id);
-            return Result<PatientDto>.Success(Mapping.MapToDto(patient));
+            _logger.LogInformation("Patient ID: {PatientId} retrieved successfully", id);
+            return Result<PatientDto>.Success(Mapping.MapToDto(result.Value!));
         }
 
         public async Task<Result<PatientDto>> CreateAsync(CreatePatientDto createDto)
         {
-            _logger.LogInformation("Attempting to create new patient: {FirstName} {LastName}",
-                createDto.FirstName, createDto.LastName);
+            _logger.LogInformation("Creating patient: {FirstName} {LastName}", createDto.FirstName, createDto.LastName);
 
-            var genderExists = await _patientRepository.GenderExistsAsync(createDto.GenderId);
-            if (!genderExists)
+            var genderResult = await _patientRepository.GenderExistsAsync(createDto.GenderId);
+            if (!genderResult.IsSuccess)
             {
-                _logger.LogWarning("Cannot create patient - gender with ID {GenderId} does not exist", createDto.GenderId);
-                return Result<PatientDto>.Failure($"Gender with ID {createDto.GenderId} does not exist");
+                _logger.LogWarning("Failed to create patient - Gender ID: {GenderId} not found", createDto.GenderId);
+                return Result<PatientDto>.Failure(genderResult.Error!);
             }
-            var patient = Mapping.MapToEntity(createDto);
-            var createdPatient = await _patientRepository.CreateAsync(patient);
 
-            _logger.LogInformation("Successfully created patient with ID {PatientId}", createdPatient.Id);
-            return Result<PatientDto>.Success(Mapping.MapToDto(createdPatient));
+            var patient = Mapping.MapToEntity(createDto);
+            var createResult = await _patientRepository.CreateAsync(patient);
+
+            if (!createResult.IsSuccess)
+            {
+                _logger.LogError("Failed to create patient. Error: {Error}", createResult.Error);
+                return Result<PatientDto>.Failure(createResult.Error!);
+            }
+
+            _logger.LogInformation("Patient created successfully - ID: {PatientId}", createResult.Value!.Id);
+            return Result<PatientDto>.Success(Mapping.MapToDto(createResult.Value!));
         }
 
         public async Task<Result<PatientDto>> UpdateAsync(int id, CreatePatientDto updateDto)
         {
-            _logger.LogInformation("Attempting to update patient with ID {PatientId}", id);
+            _logger.LogInformation("Updating patient ID: {PatientId}", id);
 
-            var existingPatient = await _patientRepository.GetByIdAsync(id);
-            if (existingPatient == null)
+            var existingResult = await _patientRepository.GetByIdAsync(id);
+            if (!existingResult.IsSuccess)
             {
-                _logger.LogWarning("Cannot update - patient with ID {PatientId} not found", id);
-                return Result<PatientDto>.Failure($"Patient with ID {id} not found");
-            }
-            var genderExists = await _patientRepository.GenderExistsAsync(updateDto.GenderId);
-            if (!genderExists)
-            {
-                _logger.LogWarning("Cannot update patient - gender with ID {GenderId} does not exist", updateDto.GenderId);
-                return Result<PatientDto>.Failure($"Gender with ID {updateDto.GenderId} does not exist");
+                _logger.LogWarning("Failed to update patient ID: {PatientId}. Error: {Error}", id, existingResult.Error);
+                return Result<PatientDto>.Failure(existingResult.Error!);
             }
 
-            Mapping.MapUpdateToEntity(updateDto, existingPatient);
+            var genderResult = await _patientRepository.GenderExistsAsync(updateDto.GenderId);
+            if (!genderResult.IsSuccess)
+            {
+                _logger.LogWarning("Failed to update patient - Gender ID: {GenderId} not found", updateDto.GenderId);
+                return Result<PatientDto>.Failure(genderResult.Error!);
+            }
 
-            var updatedPatient = await _patientRepository.UpdateAsync(existingPatient);
+            Mapping.MapUpdateToEntity(updateDto, existingResult.Value!);
 
-            _logger.LogInformation("Successfully updated patient with ID {PatientId}", id);
-            return Result<PatientDto>.Success(Mapping.MapToDto(updatedPatient));
+            var updateResult = await _patientRepository.UpdateAsync(existingResult.Value!);
+
+            if (!updateResult.IsSuccess)
+            {
+                _logger.LogError("Failed to update patient ID: {PatientId}. Error: {Error}", id, updateResult.Error);
+                return Result<PatientDto>.Failure(updateResult.Error!);
+            }
+
+            _logger.LogInformation("Patient ID: {PatientId} updated successfully", id);
+            return Result<PatientDto>.Success(Mapping.MapToDto(updateResult.Value!));
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            _logger.LogInformation("Attempting to delete patient with ID {PatientId}", id);
+            _logger.LogInformation("Deleting patient ID: {PatientId}", id);
 
-            var success = await _patientRepository.DeleteAsync(id);
-            if (!success)
+            var result = await _patientRepository.DeleteAsync(id);
+
+            if (!result.IsSuccess)
             {
-                _logger.LogWarning("Cannot delete - patient with ID {PatientId} not found", id);
-                return Result<bool>.Failure($"Patient with ID {id} not found");
+                _logger.LogWarning("Failed to delete patient ID: {PatientId}. Error: {Error}", id, result.Error);
+                return Result<bool>.Failure(result.Error!);
             }
 
-            _logger.LogInformation("Successfully deleted patient with ID {PatientId}", id);
+            _logger.LogInformation("Patient ID: {PatientId} deleted successfully", id);
             return Result<bool>.Success(true);
         }
 
         public async Task<Result<IEnumerable<GenderDto>>> GetAllGendersAsync()
         {
-            _logger.LogInformation("Attempting to retrieve all genders");
+            _logger.LogInformation("Retrieving all genders");
 
-            var genders = await _patientRepository.GetAllGendersAsync();
-            var genderDtos = Mapping.MapToGenderDtoCollection(genders);
+            var result = await _patientRepository.GetAllGendersAsync();
 
+            if (!result.IsSuccess)
+            {
+                _logger.LogWarning("Failed to retrieve genders. Error: {Error}", result.Error);
+                return Result<IEnumerable<GenderDto>>.Failure(result.Error!);
+            }
+
+            var genderDtos = Mapping.MapToGenderDtoCollection(result.Value!);
             _logger.LogInformation("Successfully retrieved {GenderCount} genders", genderDtos.Count());
+
             return Result<IEnumerable<GenderDto>>.Success(genderDtos);
         }
     }

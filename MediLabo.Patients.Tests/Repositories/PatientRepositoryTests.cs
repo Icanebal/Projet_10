@@ -25,7 +25,6 @@ namespace MediLabo.Patients.Tests.Repositories
             SeedTestData();
         }
 
-        // Seed les genres et les patients de test
         private void SeedTestData()
         {
             var genders = new[]
@@ -76,37 +75,40 @@ namespace MediLabo.Patients.Tests.Repositories
 
             var result = await _repository.GetAllAsync();
 
-            result.Should().HaveCount(1);
-            result.Should().NotContain(p => p.Id == 1);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().HaveCount(1);
+            result.Value.Should().NotContain(p => p.Id == 1);
         }
 
         [Fact]
-        public async Task GetByIdAsync_ExistingId_ReturnsPatient()
+        public async Task GetByIdAsync_ExistingId_ReturnsSuccessWithPatient()
         {
             var patientId = 1;
 
             var result = await _repository.GetByIdAsync(patientId);
 
-            result.Should().NotBeNull();
-            result!.Id.Should().Be(patientId);
-            result.FirstName.Should().Be("John");
-            result.LastName.Should().Be("Doe");
-            result.Gender.Should().NotBeNull();
-            result.Gender.Name.Should().Be("Homme");
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value!.Id.Should().Be(patientId);
+            result.Value.FirstName.Should().Be("John");
+            result.Value.LastName.Should().Be("Doe");
+            result.Value.Gender.Should().NotBeNull();
+            result.Value.Gender.Name.Should().Be("Homme");
         }
 
         [Fact]
-        public async Task GetByIdAsync_NonExistingId_ReturnsNull()
+        public async Task GetByIdAsync_NonExistingId_ReturnsFailure()
         {
             var nonExistingId = 999;
 
             var result = await _repository.GetByIdAsync(nonExistingId);
 
-            result.Should().BeNull();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Be("Patient not found");
         }
 
         [Fact]
-        public async Task CreateAsync_ValidPatient_ReturnsCreatedPatient()
+        public async Task CreateAsync_ValidPatient_ReturnsSuccessWithCreatedPatient()
         {
             var newPatient = new Patient
             {
@@ -120,19 +122,20 @@ namespace MediLabo.Patients.Tests.Repositories
 
             var result = await _repository.CreateAsync(newPatient);
 
-            result.Should().NotBeNull();
-            result.Id.Should().BeGreaterThan(0);
-            result.FirstName.Should().Be("New");
-            result.Gender.Should().NotBeNull();
-            result.Gender.Name.Should().Be("Homme");
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value!.Id.Should().BeGreaterThan(0);
+            result.Value.FirstName.Should().Be("New");
+            result.Value.Gender.Should().NotBeNull();
+            result.Value.Gender!.Name.Should().Be("Homme");
 
-            var savedPatient = await _context.Patients.Include(p => p.Gender).FirstOrDefaultAsync(p => p.Id == result.Id);
+            var savedPatient = await _context.Patients.Include(p => p.Gender).FirstOrDefaultAsync(p => p.Id == result.Value.Id);
             savedPatient.Should().NotBeNull();
             savedPatient!.FirstName.Should().Be("New");
         }
 
         [Fact]
-        public async Task UpdateAsync_ExistingPatient_ReturnsUpdatedPatient()
+        public async Task UpdateAsync_ExistingPatient_ReturnsSuccessWithUpdatedPatient()
         {
             var patientToUpdate = await _context.Patients.Include(p => p.Gender).FirstOrDefaultAsync(p => p.Id == 1);
             patientToUpdate!.FirstName = "Updated";
@@ -140,10 +143,11 @@ namespace MediLabo.Patients.Tests.Repositories
 
             var result = await _repository.UpdateAsync(patientToUpdate);
 
-            result.Should().NotBeNull();
-            result.FirstName.Should().Be("Updated");
-            result.Address.Should().Be("New Address");
-            result.Gender.Should().NotBeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value!.FirstName.Should().Be("Updated");
+            result.Value.Address.Should().Be("New Address");
+            result.Value.Gender.Should().NotBeNull();
 
             var updatedPatient = await _context.Patients.Include(p => p.Gender).FirstOrDefaultAsync(p => p.Id == 1);
             updatedPatient!.FirstName.Should().Be("Updated");
@@ -151,13 +155,14 @@ namespace MediLabo.Patients.Tests.Repositories
         }
 
         [Fact]
-        public async Task DeleteAsync_ExistingPatient_ReturnsTrue()
+        public async Task DeleteAsync_ExistingPatient_ReturnsSuccess()
         {
             var patientId = 1;
 
             var result = await _repository.DeleteAsync(patientId);
 
-            result.Should().BeTrue();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().BeTrue();
 
             var deletedPatient = await _context.Patients.FindAsync(patientId);
             deletedPatient.Should().NotBeNull();
@@ -165,41 +170,45 @@ namespace MediLabo.Patients.Tests.Repositories
         }
 
         [Fact]
-        public async Task DeleteAsync_NonExistingPatient_ReturnsFalse()
+        public async Task DeleteAsync_NonExistingPatient_ReturnsFailure()
         {
             var nonExistingId = 999;
 
             var result = await _repository.DeleteAsync(nonExistingId);
 
-            result.Should().BeFalse();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Be("Patient not found");
         }
 
         [Fact]
-        public async Task GetAllGendersAsync_ReturnsAllGenders()
+        public async Task GetAllGendersAsync_ReturnsSuccessWithAllGenders()
         {
             var result = await _repository.GetAllGendersAsync();
 
-            result.Should().NotBeNull();
-            result.Should().HaveCount(3);
-            result.Should().Contain(g => g.Name == "Homme");
-            result.Should().Contain(g => g.Name == "Femme");
-            result.Should().Contain(g => g.Name == "Autre");
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Should().HaveCount(3);
+            result.Value.Should().Contain(g => g.Name == "Homme");
+            result.Value.Should().Contain(g => g.Name == "Femme");
+            result.Value.Should().Contain(g => g.Name == "Autre");
         }
 
         [Fact]
-        public async Task GenderExistsAsync_ExistingGender_ReturnsTrue()
+        public async Task GenderExistsAsync_ExistingGender_ReturnsSuccess()
         {
             var result = await _repository.GenderExistsAsync(1);
 
-            result.Should().BeTrue();
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().BeTrue();
         }
 
         [Fact]
-        public async Task GenderExistsAsync_NonExistingGender_ReturnsFalse()
+        public async Task GenderExistsAsync_NonExistingGender_ReturnsFailure()
         {
             var result = await _repository.GenderExistsAsync(999);
 
-            result.Should().BeFalse();
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Be("Gender not found");
         }
 
         public void Dispose()

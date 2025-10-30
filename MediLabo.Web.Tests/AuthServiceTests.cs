@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
 using MediLabo.Common;
+using MediLabo.Common.HttpServices;
+using MediLabo.Common.DTOs;
 using MediLabo.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -43,6 +45,7 @@ public class AuthServiceTests
 
         var authResponse = new AuthResponseDto
         {
+            Id = "admin-id",
             Token = token,
             Expiration = DateTime.UtcNow.AddHours(1),
             Email = username,

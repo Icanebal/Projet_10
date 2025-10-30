@@ -1,6 +1,7 @@
 ﻿using MediLabo.Identity.API.Models;
 using MediLabo.Common;
 using Microsoft.AspNetCore.Identity;
+using MediLabo.Common.DTOs;
 
 namespace MediLabo.Identity.API.Services
 {
