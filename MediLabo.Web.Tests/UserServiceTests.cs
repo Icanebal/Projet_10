@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using MediLabo.Web.Services;
 using MediLabo.Web.Models.ViewModels;
 using MediLabo.Common;
+using MediLabo.Common.HttpServices;
 
 namespace MediLabo.Web.Tests.Services;
 

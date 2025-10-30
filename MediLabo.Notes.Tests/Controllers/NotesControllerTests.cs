@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using MediLabo.Common;
 using MediLabo.Common.DTOs;
 using MediLabo.Common.HttpServices;
@@ -18,7 +18,7 @@ namespace MediLabo.Notes.Tests.Controllers
     {
         private readonly Mock<INoteRepository> _mockRepository;
         private readonly Mock<ILogger<NoteService>> _mockLogger;
-        private readonly Mock<IPatientApiService> _mockPatientApiService;
+        private readonly Mock<IApiService> _mockApiService;
         private readonly NoteService _service;
         private readonly NotesController _controller;
 
@@ -26,8 +26,8 @@ namespace MediLabo.Notes.Tests.Controllers
         {
             _mockRepository = new Mock<INoteRepository>();
             _mockLogger = new Mock<ILogger<NoteService>>();
-            _mockPatientApiService = new Mock<IPatientApiService>();
-            _service = new NoteService(_mockRepository.Object, _mockPatientApiService.Object, _mockLogger.Object);
+            _mockApiService = new Mock<IApiService>();
+            _service = new NoteService(_mockRepository.Object, _mockApiService.Object, _mockLogger.Object);
             _controller = new NotesController(_service);
         }
 
@@ -50,9 +50,15 @@ namespace MediLabo.Notes.Tests.Controllers
                 CreateTestNote("n1", 1, "Note A")
             };
 
-            _mockPatientApiService
-               .Setup(p => p.GetPatientFullNameAsync(1))
-               .ReturnsAsync(Result<string>.Success("John Doe"));
+            _mockApiService
+                .Setup(p => p.GetAsync<PatientDto>($"api/patients/1"))
+                .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
+                {
+                    Id = 1,
+                    FirstName = "John",
+                    LastName = "Doe",
+                }));
+
             _mockRepository
                 .Setup(r => r.GetNotesByPatientIdAsync(1))
                 .ReturnsAsync(Result<IEnumerable<Note>>.Success(notes));
@@ -75,9 +81,15 @@ namespace MediLabo.Notes.Tests.Controllers
         {
             var note = CreateTestNote("n1", 1, "Content");
 
-            _mockPatientApiService
-               .Setup(p => p.GetPatientFullNameAsync(1))
-               .ReturnsAsync(Result<string>.Success("John Doe"));
+            _mockApiService
+                .Setup(p => p.GetAsync<PatientDto>($"api/patients/1"))
+                .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
+                {
+                    Id = 1,
+                    FirstName = "John",
+                    LastName = "Doe",
+                }));
+
             _mockRepository
                 .Setup(r => r.GetNoteByIdAsync("n1"))
                 .ReturnsAsync(Result<Note>.Success(note));
@@ -119,9 +131,14 @@ namespace MediLabo.Notes.Tests.Controllers
 
             var created = CreateTestNote("new-id", 1, "New note");
 
-            _mockPatientApiService
-                .Setup(p => p.GetPatientFullNameAsync(1))
-                .ReturnsAsync(Result<string>.Success("John Doe"));
+            _mockApiService
+                .Setup(p => p.GetAsync<PatientDto>($"api/patients/1"))
+                .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
+                {
+                    Id = 1,
+                    FirstName = "John",
+                    LastName = "Doe",
+                }));
 
             _mockRepository
                 .Setup(r => r.CreateNoteAsync(It.IsAny<Note>()))
@@ -169,9 +186,15 @@ namespace MediLabo.Notes.Tests.Controllers
 
             var updated = CreateTestNote("n1", 1, "Updated");
 
-            _mockPatientApiService
-               .Setup(p => p.GetPatientFullNameAsync(1))
-               .ReturnsAsync(Result<string>.Success("John Doe"));
+            _mockApiService
+                .Setup(p => p.GetAsync<PatientDto>($"api/patients/1"))
+                .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
+                {
+                    Id = 1,
+                    FirstName = "John",
+                    LastName = "Doe",
+                }));
+
             _mockRepository
                 .Setup(r => r.UpdateNoteAsync("n1", It.IsAny<Note>()))
                 .ReturnsAsync(Result<Note>.Success(updated));
@@ -214,9 +237,15 @@ namespace MediLabo.Notes.Tests.Controllers
                 Content = "Updated"
             };
 
-            _mockPatientApiService
-               .Setup(p => p.GetPatientFullNameAsync(1))
-               .ReturnsAsync(Result<string>.Success("John Doe"));
+            _mockApiService
+                .Setup(p => p.GetAsync<PatientDto>($"api/patients/1"))
+                .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
+                {
+                    Id = 1,
+                    FirstName = "John",
+                    LastName = "Doe",
+                }));
+
             _mockRepository
                 .Setup(r => r.UpdateNoteAsync("missing", It.IsAny<Note>()))
                 .ReturnsAsync(Result<Note>.Failure("Note not found"));

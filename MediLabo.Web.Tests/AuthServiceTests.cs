@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using MediLabo.Common;
+using MediLabo.Common.HttpServices;
 using MediLabo.Common.DTOs;
 using MediLabo.Web.Services;
 using Microsoft.AspNetCore.Http;
