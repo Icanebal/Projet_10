@@ -18,7 +18,7 @@ namespace MediLabo.Identity.Tests.Services
         public AuthServiceTests()
         {
             var store = new Mock<IUserStore<ApplicationUser>>();
-            _userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null, null);
+            _userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
 
             var contextAccessor = new Mock<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
             var userPrincipalFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
@@ -26,7 +26,7 @@ namespace MediLabo.Identity.Tests.Services
                 _userManagerMock.Object,
                 contextAccessor.Object,
                 userPrincipalFactory.Object,
-                null, null, null, null);
+                null!, null!, null!, null!);
 
             _tokenServiceMock = new Mock<ITokenService>();
             _loggerMock = new Mock<ILogger<AuthService>>();
@@ -46,7 +46,7 @@ namespace MediLabo.Identity.Tests.Services
             var user = new ApplicationUser { Email = model.Email, FirstName = "John", LastName = "Doe"};
 
             _userManagerMock.Setup(m => m.FindByEmailAsync(model.Email))
-                .ReturnsAsync((ApplicationUser)null);
+                .ReturnsAsync((ApplicationUser)null!);
             _userManagerMock.Setup(m => m.CreateAsync(It.IsAny<ApplicationUser>(), model.Password))
                 .ReturnsAsync(IdentityResult.Success);
             _userManagerMock.Setup(m => m.AddToRoleAsync(It.IsAny<ApplicationUser>(), model.Role))
@@ -83,7 +83,7 @@ namespace MediLabo.Identity.Tests.Services
             var model = new RegisterModel { Email = "test@test.com", Password = "WeakPass", Role = "User", ConfirmPassword = "StrongPass123!", FirstName = "John", LastName = "Doe" };
 
             _userManagerMock.Setup(m => m.FindByEmailAsync(model.Email))
-                .ReturnsAsync((ApplicationUser)null);
+                .ReturnsAsync((ApplicationUser)null!);
             _userManagerMock.Setup(m => m.CreateAsync(It.IsAny<ApplicationUser>(), model.Password))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Password too weak" }));
 
@@ -99,7 +99,7 @@ namespace MediLabo.Identity.Tests.Services
             var model = new RegisterModel { Email = "test@test.com", Password = "StrongPass123!", ConfirmPassword = "StrongPass123!", FirstName = "John", LastName = "Doe" };
 
             _userManagerMock.Setup(m => m.FindByEmailAsync(model.Email))
-                .ReturnsAsync((ApplicationUser)null);
+                .ReturnsAsync((ApplicationUser)null!);
             _userManagerMock.Setup(m => m.CreateAsync(It.IsAny<ApplicationUser>(), model.Password))
                 .ReturnsAsync(IdentityResult.Success);
             _userManagerMock.Setup(m => m.AddToRoleAsync(It.IsAny<ApplicationUser>(), "User"))
@@ -139,7 +139,7 @@ namespace MediLabo.Identity.Tests.Services
         {
             var model = new LoginModel { Email = "notfound@test.com", Password = "StrongPass123!" };
 
-            _userManagerMock.Setup(m => m.FindByEmailAsync(model.Email)).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(m => m.FindByEmailAsync(model.Email)).ReturnsAsync((ApplicationUser)null!);
 
             var result = await _authService.LoginAsync(model);
 

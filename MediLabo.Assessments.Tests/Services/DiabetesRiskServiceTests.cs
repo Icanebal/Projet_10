@@ -3,7 +3,6 @@ using MediLabo.Assessments.API.Models;
 using MediLabo.Assessments.API.Services;
 using MediLabo.Common;
 using MediLabo.Common.DTOs;
-using MediLabo.Common.HttpServices;
 using MediLabo.Common.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -12,7 +11,7 @@ namespace MediLabo.Assessments.API.Tests.Services;
 
 public class DiabetesRiskServiceTests
 {
-    private readonly Mock<IApiService> _mockApiService;
+    private readonly Mock<IPatientAndNotesService> _mockPatientAndNotesService;
     private readonly AgeCalculator _ageCalculator;
     private readonly TriggerTermsCalculator _triggerTermsCalculator;
     private readonly DiabetesRiskCalculator _diabetesRiskCalculator;
@@ -21,14 +20,14 @@ public class DiabetesRiskServiceTests
 
     public DiabetesRiskServiceTests()
     {
-        _mockApiService = new Mock<IApiService>();
+        _mockPatientAndNotesService = new Mock<IPatientAndNotesService>();
         _ageCalculator = new AgeCalculator();
         _triggerTermsCalculator = new TriggerTermsCalculator();
         _diabetesRiskCalculator = new DiabetesRiskCalculator();
         _mockLogger = new Mock<ILogger<DiabetesRiskService>>();
 
         _service = new DiabetesRiskService(
-            _mockApiService.Object,
+            _mockPatientAndNotesService.Object,
             _ageCalculator,
             _triggerTermsCalculator,
             _diabetesRiskCalculator,
@@ -52,12 +51,12 @@ public class DiabetesRiskServiceTests
             new () { Id = "1", PatientId = patientId, Content = "Le patient se sent bien. Poids normal.", CreatedAt = DateTime.UtcNow }
         };
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
 
         // Act
@@ -99,12 +98,12 @@ public class DiabetesRiskServiceTests
             }
         };
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
 
         // Act
@@ -145,12 +144,12 @@ public class DiabetesRiskServiceTests
             }
         };
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
 
         // Act
@@ -205,12 +204,12 @@ public class DiabetesRiskServiceTests
             }
         };
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
 
         // Act
@@ -228,8 +227,8 @@ public class DiabetesRiskServiceTests
         var patientId = 999;
         var errorMessage = "Patient not found";
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Failure(errorMessage));
 
         // Act
@@ -240,7 +239,7 @@ public class DiabetesRiskServiceTests
         Assert.Equal(errorMessage, result.Error);
         Assert.Null(result.Value);
 
-        _mockApiService.Verify(x => x.GetAsync<IEnumerable<NoteDto>>(It.IsAny<string>()), Times.Never);
+        _mockPatientAndNotesService.Verify(x => x.GetPatientNotesAsync(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -256,12 +255,12 @@ public class DiabetesRiskServiceTests
             GenderId = 1
         };
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Failure(errorMessage));
 
         // Act
@@ -287,12 +286,12 @@ public class DiabetesRiskServiceTests
 
         var emptyNotes = new List<NoteDto>();
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(emptyNotes));
 
         // Act

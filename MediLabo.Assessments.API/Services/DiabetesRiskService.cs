@@ -1,23 +1,25 @@
 ﻿using MediLabo.Assessments.API.Calculators;
 using MediLabo.Assessments.API.Models;
 using MediLabo.Common;
-using MediLabo.Common.DTOs;
-using MediLabo.Common.Models;
-using MediLabo.Common.HttpServices;
 
 namespace MediLabo.Assessments.API.Services;
 
 public class DiabetesRiskService
 {
-    private readonly IApiService _apiService;
+    private readonly IPatientAndNotesService _patientAndNotesService;
     private readonly AgeCalculator _ageCalculator;
     private readonly TriggerTermsCalculator _triggerTermsCalculator;
     private readonly DiabetesRiskCalculator _diabetesRiskCalculator;
     private readonly ILogger<DiabetesRiskService> _logger;
 
-    public DiabetesRiskService(IApiService apiService, AgeCalculator ageCalculator, TriggerTermsCalculator triggerTermsCalculator, DiabetesRiskCalculator diabetesRiskCalculator, ILogger<DiabetesRiskService> logger)
+    public DiabetesRiskService(
+        IPatientAndNotesService patientAndNotesService,
+        AgeCalculator ageCalculator,
+        TriggerTermsCalculator triggerTermsCalculator,
+        DiabetesRiskCalculator diabetesRiskCalculator,
+        ILogger<DiabetesRiskService> logger)
     {
-        _apiService = apiService;
+        _patientAndNotesService = patientAndNotesService;
         _ageCalculator = ageCalculator;
         _triggerTermsCalculator = triggerTermsCalculator;
         _diabetesRiskCalculator = diabetesRiskCalculator;
@@ -28,7 +30,7 @@ public class DiabetesRiskService
     {
         _logger.LogInformation("Calculating diabetes risk for patient {PatientId}", patientId);
 
-        var patientResult = await _apiService.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}");
+        var patientResult = await _patientAndNotesService.GetPatientAsync(patientId);
 
         if (!patientResult.IsSuccess)
         {
@@ -38,7 +40,7 @@ public class DiabetesRiskService
 
         var patient = patientResult.Value!;
 
-        var notesResult = await _apiService.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}");
+        var notesResult = await _patientAndNotesService.GetPatientNotesAsync(patientId);
 
         if (!notesResult.IsSuccess)
         {

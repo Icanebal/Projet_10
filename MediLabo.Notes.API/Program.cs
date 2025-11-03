@@ -21,6 +21,9 @@ builder.Services.AddHttpClient<IApiService, ApiService>(client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
+// Service dédié pour les appels à l'API Patients
+builder.Services.AddScoped<IPatientService, PatientService>();
+
 var mongoConnectionString = builder.Configuration.GetSection("MongoDbSettings:ConnectionString").Value!;
 var mongoDatabaseName = builder.Configuration.GetSection("MongoDbSettings:DatabaseName").Value!;
 

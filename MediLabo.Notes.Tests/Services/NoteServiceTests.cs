@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using MediLabo.Common;
 using MediLabo.Common.DTOs;
-using MediLabo.Common.HttpServices;
 using MediLabo.Notes.API.Interfaces;
 using MediLabo.Notes.API.Models.DTOs;
 using MediLabo.Notes.API.Models.Entities;
@@ -16,15 +15,15 @@ namespace MediLabo.Notes.Tests.Services
     {
         private readonly Mock<INoteRepository> _mockRepository;
         private readonly Mock<ILogger<NoteService>> _mockLogger;
-        private readonly Mock<IApiService> _mockApiService;
+        private readonly Mock<IPatientService> _mockPatientService;
         private readonly NoteService _service;
 
         public NoteServiceTests()
         {
             _mockRepository = new Mock<INoteRepository>();
             _mockLogger = new Mock<ILogger<NoteService>>();
-            _mockApiService = new Mock<IApiService>();
-            _service = new NoteService(_mockRepository.Object, _mockApiService.Object, _mockLogger.Object);
+            _mockPatientService = new Mock<IPatientService>();
+            _service = new NoteService(_mockRepository.Object, _mockPatientService.Object, _mockLogger.Object);
         }
 
         private static Note CreateTestNote(string id, int patientId = 1, string content = "Note")
@@ -41,8 +40,8 @@ namespace MediLabo.Notes.Tests.Services
         [Fact]
         public async Task GetNotesByPatientIdAsync_ReturnsSuccessWithDtos()
         {
-            _mockApiService
-                .Setup(p => p.GetAsync<PatientDto>($"api/patients/1"))
+            _mockPatientService
+                .Setup(p => p.GetPatientAsync(1))
                 .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
                 {
                     Id = 1,
@@ -68,8 +67,8 @@ namespace MediLabo.Notes.Tests.Services
         [Fact]
         public async Task GetNotesByPatientIdAsync_Failure_BubblesError()
         {
-            _mockApiService
-                .Setup(p => p.GetAsync<PatientDto>($"api/patients/1"))
+            _mockPatientService
+                .Setup(p => p.GetPatientAsync(1))
                 .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
                 {
                     Id = 1,
@@ -92,9 +91,8 @@ namespace MediLabo.Notes.Tests.Services
         {
             var note = CreateTestNote("n1");
 
-            // ✅ Setup avec GetAsync
-            _mockApiService
-                .Setup(p => p.GetAsync<PatientDto>($"api/patients/{note.PatientId}"))
+            _mockPatientService
+                .Setup(p => p.GetPatientAsync(note.PatientId))
                 .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
                 {
                     Id = 1,
@@ -131,9 +129,8 @@ namespace MediLabo.Notes.Tests.Services
             var dto = new CreateNoteDto { PatientId = 1, Content = "New" };
             var created = CreateTestNote("new-id", 1, "New");
 
-            // ✅ Setup avec GetAsync
-            _mockApiService
-                .Setup(p => p.GetAsync<PatientDto>($"api/patients/{dto.PatientId}"))
+            _mockPatientService
+                .Setup(p => p.GetPatientAsync(dto.PatientId))
                 .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
                 {
                     Id = 1,
@@ -156,9 +153,8 @@ namespace MediLabo.Notes.Tests.Services
         {
             var dto = new CreateNoteDto { PatientId = 1, Content = "New" };
 
-            // ✅ Setup avec GetAsync
-            _mockApiService
-                .Setup(p => p.GetAsync<PatientDto>($"api/patients/{dto.PatientId}"))
+            _mockPatientService
+                .Setup(p => p.GetPatientAsync(dto.PatientId))
                 .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
                 {
                     Id = 1,
@@ -187,9 +183,8 @@ namespace MediLabo.Notes.Tests.Services
                 .Setup(r => r.GetNoteByIdAsync("n1"))
                 .ReturnsAsync(Result<Note>.Success(existingNote));
 
-            // ✅ Setup avec GetAsync
-            _mockApiService
-                .Setup(p => p.GetAsync<PatientDto>($"api/patients/{existingNote.PatientId}"))
+            _mockPatientService
+                .Setup(p => p.GetPatientAsync(existingNote.PatientId))
                 .ReturnsAsync(Result<PatientDto>.Success(new PatientDto
                 {
                     Id = 1,
