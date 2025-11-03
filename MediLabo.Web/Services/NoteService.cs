@@ -57,11 +57,11 @@ public class NoteService
         return result;
     }
 
-    public async Task<Result<NoteViewModel>> UpdateNoteAsync(string noteId, CreateNoteViewModel model)
+    public async Task<Result<NoteViewModel>> UpdateNoteAsync(string noteId, UpdateNoteViewModel model)
     {
         _logger.LogInformation("Updating note {NoteId}", noteId);
 
-        var result = await _apiService.PutAsync<CreateNoteViewModel, NoteViewModel>($"/api/notes/{noteId}", model);
+        var result = await _apiService.PutAsync<UpdateNoteViewModel, NoteViewModel>($"/api/notes/{noteId}", model);
 
         if (result.IsFailure)
         {

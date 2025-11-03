@@ -1,6 +1,7 @@
 ﻿using MediLabo.Common;
 using MediLabo.Identity.API.Models;
 using MediLabo.Identity.API.Models.DTOs;
+using MediLabo.Identity.API.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,16 +31,7 @@ namespace MediLabo.Identity.API.Services
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-
-                userDtos.Add(new UserDto
-                {
-                    Id = user.Id,
-                    Email = user.Email!,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Roles = roles,
-                    CreatedAt = user.CreatedAt
-                });
+                userDtos.Add(Mapping.ToDto(user, roles));
             }
 
             _logger.LogInformation("Successfully retrieved {Count} users", userDtos.Count);

@@ -48,7 +48,7 @@ public class NotesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Result<NoteDto>>> UpdateNote(string id, [FromBody] CreateNoteDto updateNoteDto)
+    public async Task<ActionResult<Result<NoteDto>>> UpdateNote(string id, [FromBody] UpdateNoteDto updateNoteDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(Result<NoteDto>.Failure("Invalid model state"));

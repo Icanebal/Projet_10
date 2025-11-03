@@ -47,7 +47,7 @@ namespace MediLabo.Patients.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Result<PatientDto>>> UpdatePatient(int id, [FromBody] CreatePatientDto updateDto)
+        public async Task<ActionResult<Result<PatientDto>>> UpdatePatient(int id, [FromBody] UpdatePatientDto updateDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(Result<PatientDto>.Failure("Invalid model state"));

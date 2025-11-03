@@ -10,14 +10,12 @@ namespace MediLabo.Web.Controllers;
 public class PatientsController : Controller
 {
     private readonly PatientService _patientService;
-    private readonly AssessmentService _assessmentService;
     private readonly ILogger<PatientsController> _logger;
 
-    public PatientsController(PatientService patientService, ILogger<PatientsController> logger, AssessmentService assessmentService)
+    public PatientsController(PatientService patientService, ILogger<PatientsController> logger)
     {
         _patientService = patientService;
         _logger = logger;
-        _assessmentService = assessmentService;
     }
 
     public async Task<IActionResult> Index()
@@ -43,16 +41,6 @@ public class PatientsController : Controller
             _logger.LogError("Failed to retrieve patient {PatientId}: {Error}", id, result.Error);
             TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Patient introuvable"));
             return RedirectToAction(nameof(Index));
-        }
-
-        var riskResult = await _assessmentService.GetDiabetesRiskAsync(id);
-        if (riskResult.IsSuccess)
-        {
-            result.Value!.DiabetesRisk = riskResult.Value;
-        }
-        else
-        {
-            _logger.LogWarning("Could not retrieve diabetes risk for patient {PatientId}: {Error}", id, riskResult.Error);
         }
 
         return View(result.Value);
@@ -117,7 +105,7 @@ public class PatientsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var updateViewModel = new CreatePatientViewModel
+        var updateViewModel = new UpdatePatientViewModel
         {
             FirstName = result.Value!.FirstName,
             LastName = result.Value.LastName,
@@ -134,7 +122,7 @@ public class PatientsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, CreatePatientViewModel updatePatientViewModel)
+    public async Task<IActionResult> Edit(int id, UpdatePatientViewModel updatePatientViewModel)
     {
         if (!ModelState.IsValid)
         {

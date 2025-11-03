@@ -88,7 +88,7 @@ public class NoteService
             return Result<NoteDto>.Failure(patientResult.Error!);
         }
 
-        var note = Mapping.ToEntity(createNoteDto);
+        var note = Mapping.ToEntityFromCreate(createNoteDto);
         var result = await _noteRepository.CreateNoteAsync(note);
 
         if (!result.IsSuccess)
@@ -103,28 +103,39 @@ public class NoteService
         return Result<NoteDto>.Success(noteDto);
     }
 
-    public async Task<Result<NoteDto>> UpdateNoteAsync(string noteId, CreateNoteDto updateNoteDto)
+    public async Task<Result<NoteDto>> UpdateNoteAsync(string noteId, UpdateNoteDto updateNoteDto)
     {
         _logger.LogInformation("Updating note ID: {NoteId}", noteId);
 
-        var patientResult = await _apiService.GetAsync<PatientDto>($"api/patients/{updateNoteDto.PatientId}");
+        var existingNoteResult = await _noteRepository.GetNoteByIdAsync(noteId);
+
+        if (!existingNoteResult.IsSuccess)
+        {
+            _logger.LogWarning("Failed to retrieve note ID: {NoteId}. Error: {Error}", noteId, existingNoteResult.Error);
+            return Result<NoteDto>.Failure(existingNoteResult.Error!);
+        }
+
+        var existingNote = existingNoteResult.Value!;
+
+        var patientResult = await _apiService.GetAsync<PatientDto>($"api/patients/{existingNote.PatientId}");
 
         if (!patientResult.IsSuccess)
         {
-            _logger.LogWarning("Failed to retrieve patient for ID: {PatientId}", updateNoteDto.PatientId);
+            _logger.LogWarning("Failed to retrieve patient for ID: {PatientId}", existingNote.PatientId);
             return Result<NoteDto>.Failure(patientResult.Error!);
         }
 
-        var noteToUpdate = Mapping.ToEntity(updateNoteDto);
-        var result = await _noteRepository.UpdateNoteAsync(noteId, noteToUpdate);
+        Mapping.MapUpdateToEntity(updateNoteDto, existingNote);
+        
+        var updateResult = await _noteRepository.UpdateNoteAsync(noteId, existingNote);
 
-        if (!result.IsSuccess)
+        if (!updateResult.IsSuccess)
         {
-            _logger.LogWarning("Failed to update note ID: {NoteId}. Error: {Error}", noteId, result.Error);
-            return Result<NoteDto>.Failure(result.Error!);
+            _logger.LogWarning("Failed to update note ID: {NoteId}. Error: {Error}", noteId, updateResult.Error);
+            return Result<NoteDto>.Failure(updateResult.Error!);
         }
 
-        var noteDto = Mapping.ToDto(result.Value!, patientResult.Value!.FullName);
+        var noteDto = Mapping.ToDto(updateResult.Value!, patientResult.Value!.FullName);
         _logger.LogInformation("Note ID: {NoteId} updated successfully", noteId);
 
         return Result<NoteDto>.Success(noteDto);

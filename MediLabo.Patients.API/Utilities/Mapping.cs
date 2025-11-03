@@ -33,7 +33,7 @@ namespace MediLabo.Patients.API.Utilities
             };
         }
 
-        public static void MapUpdateToEntity(CreatePatientDto updateDto, Patient existingPatient)
+        public static void MapUpdateToEntity(UpdatePatientDto updateDto, Patient existingPatient)
         {
             existingPatient.FirstName = updateDto.FirstName;
             existingPatient.LastName = updateDto.LastName;
@@ -56,6 +56,7 @@ namespace MediLabo.Patients.API.Utilities
                 Name = gender.Name
             };
         }
+        
         public static IEnumerable<GenderDto> MapToGenderDtoCollection(IEnumerable<Gender> genders)
         {
             return genders.Select(MapToGenderDto);

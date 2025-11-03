@@ -154,7 +154,7 @@ namespace MediLabo.Patients.Tests.Services
             var patientId = 1;
             var existingPatient = CreateTestPatient(patientId, "Old", "Name", 1, "Homme");
 
-            var updateDto = new CreatePatientDto
+            var updateDto = new UpdatePatientDto
             {
                 FirstName = "Updated",
                 LastName = "Name",
@@ -188,7 +188,7 @@ namespace MediLabo.Patients.Tests.Services
         public async Task UpdateAsync_NonExistingPatient_ReturnsFailure()
         {
             var patientId = 999;
-            var updateDto = new CreatePatientDto
+            var updateDto = new UpdatePatientDto
             {
                 FirstName = "Updated",
                 LastName = "Name",
@@ -212,7 +212,7 @@ namespace MediLabo.Patients.Tests.Services
             var patientId = 1;
             var existingPatient = CreateTestPatient(patientId, "Old", "Name", 1, "Homme");
 
-            var updateDto = new CreatePatientDto
+            var updateDto = new UpdatePatientDto
             {
                 FirstName = "Updated",
                 LastName = "Name",

@@ -109,9 +109,8 @@ public class NotesController : Controller
             return RedirectToAction("Index", "Patients");
         }
 
-        var model = new CreateNoteViewModel
+        var model = new UpdateNoteViewModel
         {
-            PatientId = note.PatientId,
             Content = note.Content
         };
 
@@ -124,7 +123,7 @@ public class NotesController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(string id, CreateNoteViewModel model)
+    public async Task<IActionResult> Edit(string id, UpdateNoteViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -141,7 +140,7 @@ public class NotesController : Controller
         }
 
         TempData.AddToastMessage(new ToastMessage(ToastType.Success, "Note mise à jour avec succès"));
-        return RedirectToAction(nameof(PatientNotes), new { id = model.PatientId });
+        return RedirectToAction(nameof(PatientNotes), new { id = result.Value!.PatientId });
     }
 
     [HttpPost]

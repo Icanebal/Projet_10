@@ -1,6 +1,7 @@
 ﻿using MediLabo.Assessments.API.Models;
 using MediLabo.Assessments.API.Services;
 using MediLabo.Common;
+using MediLabo.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,7 @@ public class AssessmentsController : ControllerBase
     }
 
     [HttpGet("diabetes/{patientId}")]
-    public async Task<ActionResult<Result<AssessmentResult>>> GetDiabetesRisk(int patientId)
+    public async Task<ActionResult<Result<DiabetesRiskResponse>>> GetDiabetesRisk(int patientId)
     {
         _logger.LogInformation("Received request to calculate diabetes risk for patient {PatientId}", patientId);
 

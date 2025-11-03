@@ -66,7 +66,6 @@ public class DiabetesRiskServiceTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
-        Assert.Equal(patientId, result.Value.PatientId);
         Assert.Equal(DiabetesRiskLevel.None, result.Value.RiskLevel);
     }
 
@@ -302,85 +301,6 @@ public class DiabetesRiskServiceTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(DiabetesRiskLevel.None, result.Value!.RiskLevel);
-        Assert.Equal(0, result.Value.TriggerCount);
-    }
-
-    [Fact]
-    public async Task CalculateRiskAsync_WithMalePatient_MapsGenderCorrectly()
-    {
-        // Arrange
-        var patientId = 1;
-        var patient = new PatientAssessmentDto
-        {
-            Id = patientId,
-            BirthDate = new DateTime(1990, 1, 1),
-            GenderId = 1
-        };
-
-        var notes = new List<NoteDto>
-        {
-            new NoteDto
-            {
-                Id = "1",
-                PatientId = patientId,
-                Content = "Note",
-                CreatedAt = DateTime.UtcNow
-            }
-        };
-
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
-            .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
-
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
-            .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
-
-        // Act
-        var result = await _service.CalculateRiskAsync(patientId);
-
-        // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Equal(Gender.Male, result.Value!.Gender);
-    }
-
-    [Fact]
-    public async Task CalculateRiskAsync_WithFemalePatient_MapsGenderCorrectly()
-    {
-        // Arrange
-        var patientId = 1;
-        var patient = new PatientAssessmentDto
-        {
-            Id = patientId,
-            BirthDate = new DateTime(1990, 1, 1),
-            GenderId = 2
-        };
-
-        var notes = new List<NoteDto>
-        {
-            new NoteDto
-            {
-                Id = "1",
-                PatientId = patientId,
-                Content = "Note",
-                CreatedAt = DateTime.UtcNow
-            }
-        };
-
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
-            .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
-
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
-            .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
-
-        // Act
-        var result = await _service.CalculateRiskAsync(patientId);
-
-        // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Equal(Gender.Female, result.Value!.Gender);
     }
 }
 

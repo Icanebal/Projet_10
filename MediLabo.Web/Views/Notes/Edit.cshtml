@@ -1,5 +1,5 @@
 ﻿@using MediLabo.Web.Models.ViewModels
-@model MediLabo.Web.Models.ViewModels.CreateNoteViewModel
+@model MediLabo.Web.Models.ViewModels.UpdateNoteViewModel
 @{
     ViewData["Title"] = "Modifier la note";
     var patient = ViewBag.Patient as PatientViewModel;
@@ -21,7 +21,6 @@
                 <div class="card-body">
                     <form asp-action="Edit" asp-route-id="@noteId" method="post">
                         @Html.AntiForgeryToken()
-                        <input type="hidden" asp-for="PatientId" />
 
                         <div class="mb-3">
                             <label asp-for="Content" class="form-label">Contenu de la note</label>
@@ -30,7 +29,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a asp-action="PatientNotes" asp-route-id="@Model.PatientId" class="btn btn-secondary">
+                            <a asp-action="PatientNotes" asp-route-id="@note!.PatientId" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Annuler
                             </a>
                             <button type="submit" class="btn btn-primary">
@@ -46,4 +45,4 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-}
+}}
