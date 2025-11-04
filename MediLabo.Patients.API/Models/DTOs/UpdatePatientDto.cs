@@ -1,0 +1,22 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace MediLabo.Patients.API.Models.DTOs;
+
+public class UpdatePatientDto
+{
+    [Required(ErrorMessage = "First name is required")]
+    public required string FirstName { get; set; }
+    
+    [Required(ErrorMessage = "Last name is required")]
+    public required string LastName { get; set; }
+    
+    public DateTime BirthDate { get; set; }
+    
+    [Required(ErrorMessage = "Gender is required")]
+    [Range(1, int.MaxValue, ErrorMessage = "Please select a valid gender")]
+    public required int GenderId { get; set; }
+    
+    public string? Address { get; set; }
+    
+    public string? Phone { get; set; }
+}

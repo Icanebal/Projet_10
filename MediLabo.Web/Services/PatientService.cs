@@ -55,11 +55,11 @@ public class PatientService
         return result;
     }
 
-    public async Task<Result<PatientViewModel>> UpdatePatientAsync(int patientId, CreatePatientViewModel updatePatientViewModel)
+    public async Task<Result<PatientViewModel>> UpdatePatientAsync(int patientId, UpdatePatientViewModel updatePatientViewModel)
     {
         _logger.LogInformation("Updating patient with ID {PatientId}", patientId);
 
-        var result = await _apiService.PutAsync<CreatePatientViewModel, PatientViewModel>(
+        var result = await _apiService.PutAsync<UpdatePatientViewModel, PatientViewModel>(
             $"{PatientsEndpoint}/{patientId}", updatePatientViewModel);
 
         _logger.Log(result.IsSuccess ? LogLevel.Information : LogLevel.Error,

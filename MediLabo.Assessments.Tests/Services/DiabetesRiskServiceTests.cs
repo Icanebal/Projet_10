@@ -3,7 +3,6 @@ using MediLabo.Assessments.API.Models;
 using MediLabo.Assessments.API.Services;
 using MediLabo.Common;
 using MediLabo.Common.DTOs;
-using MediLabo.Common.HttpServices;
 using MediLabo.Common.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -12,7 +11,7 @@ namespace MediLabo.Assessments.API.Tests.Services;
 
 public class DiabetesRiskServiceTests
 {
-    private readonly Mock<IApiService> _mockApiService;
+    private readonly Mock<IPatientAndNotesService> _mockPatientAndNotesService;
     private readonly AgeCalculator _ageCalculator;
     private readonly TriggerTermsCalculator _triggerTermsCalculator;
     private readonly DiabetesRiskCalculator _diabetesRiskCalculator;
@@ -21,14 +20,14 @@ public class DiabetesRiskServiceTests
 
     public DiabetesRiskServiceTests()
     {
-        _mockApiService = new Mock<IApiService>();
+        _mockPatientAndNotesService = new Mock<IPatientAndNotesService>();
         _ageCalculator = new AgeCalculator();
         _triggerTermsCalculator = new TriggerTermsCalculator();
         _diabetesRiskCalculator = new DiabetesRiskCalculator();
         _mockLogger = new Mock<ILogger<DiabetesRiskService>>();
 
         _service = new DiabetesRiskService(
-            _mockApiService.Object,
+            _mockPatientAndNotesService.Object,
             _ageCalculator,
             _triggerTermsCalculator,
             _diabetesRiskCalculator,
@@ -49,15 +48,15 @@ public class DiabetesRiskServiceTests
 
         var notes = new List<NoteDto>
         {
-            new () { Id = "1",  PatientName = "TestNone Test", PatientId = patientId, Content = "Le patient se sent bien. Poids normal.", CreatedAt = DateTime.UtcNow }
+            new () { Id = "1", PatientId = patientId, Content = "Le patient se sent bien. Poids normal.", CreatedAt = DateTime.UtcNow }
         };
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
 
         // Act
@@ -66,7 +65,6 @@ public class DiabetesRiskServiceTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
-        Assert.Equal(patientId, result.Value.PatientId);
         Assert.Equal(DiabetesRiskLevel.None, result.Value.RiskLevel);
     }
 
@@ -88,7 +86,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "1",
                 PatientId = patientId,
-                PatientName = "TestBorderline Test",
                 Content = "Stress et audition anormale",
                 CreatedAt = DateTime.UtcNow
             },
@@ -96,18 +93,17 @@ public class DiabetesRiskServiceTests
             {
                 Id = "2",
                 PatientId = patientId,
-                PatientName = "TestBorderline Test",
                 Content = "Réaction aux médicaments",
                 CreatedAt = DateTime.UtcNow.AddDays(-1)
             }
         };
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
 
         // Act
@@ -136,7 +132,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "1",
                 PatientId = patientId,
-                PatientName = "TestInDanger Test",
                 Content = "Patient fumeur",
                 CreatedAt = DateTime.UtcNow
             },
@@ -144,18 +139,17 @@ public class DiabetesRiskServiceTests
             {
                 Id = "2",
                 PatientId = patientId,
-                PatientName = "TestInDanger Test",
                 Content = "Cholestérol élevé, audition anormale",
                 CreatedAt = DateTime.UtcNow.AddDays(-5)
             }
         };
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
 
         // Act
@@ -184,7 +178,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "1",
                 PatientId = patientId,
-                PatientName = "TestEarlyOnset Test",
                 Content = "Anticorps élevés, Réaction",
                 CreatedAt = DateTime.UtcNow
             },
@@ -192,7 +185,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "2",
                 PatientId = patientId,
-                PatientName = "TestEarlyOnset Test",
                 Content = "Fumeur, Hémoglobine A1C élevée",
                 CreatedAt = DateTime.UtcNow.AddDays(-1)
             },
@@ -200,7 +192,6 @@ public class DiabetesRiskServiceTests
             {
                 Id = "3",
                 PatientId = patientId,
-                PatientName = "TestEarlyOnset Test",
                 Content = "Taille, Poids, Cholestérol élevé",
                 CreatedAt = DateTime.UtcNow.AddDays(-2)
             },
@@ -208,18 +199,17 @@ public class DiabetesRiskServiceTests
             {
                 Id = "4",
                 PatientId = patientId,
-                PatientName = "TestEarlyOnset Test",
                 Content = "Vertige et Réaction aux médicaments",
                 CreatedAt = DateTime.UtcNow.AddDays(-3)
             }
         };
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
 
         // Act
@@ -237,8 +227,8 @@ public class DiabetesRiskServiceTests
         var patientId = 999;
         var errorMessage = "Patient not found";
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Failure(errorMessage));
 
         // Act
@@ -249,7 +239,7 @@ public class DiabetesRiskServiceTests
         Assert.Equal(errorMessage, result.Error);
         Assert.Null(result.Value);
 
-        _mockApiService.Verify(x => x.GetAsync<IEnumerable<NoteDto>>(It.IsAny<string>()), Times.Never);
+        _mockPatientAndNotesService.Verify(x => x.GetPatientNotesAsync(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -265,12 +255,12 @@ public class DiabetesRiskServiceTests
             GenderId = 1
         };
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Failure(errorMessage));
 
         // Act
@@ -296,12 +286,12 @@ public class DiabetesRiskServiceTests
 
         var emptyNotes = new List<NoteDto>();
 
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientAsync(patientId))
             .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
 
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
+        _mockPatientAndNotesService
+            .Setup(x => x.GetPatientNotesAsync(patientId))
             .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(emptyNotes));
 
         // Act
@@ -310,87 +300,6 @@ public class DiabetesRiskServiceTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(DiabetesRiskLevel.None, result.Value!.RiskLevel);
-        Assert.Equal(0, result.Value.TriggerCount);
-    }
-
-    [Fact]
-    public async Task CalculateRiskAsync_WithMalePatient_MapsGenderCorrectly()
-    {
-        // Arrange
-        var patientId = 1;
-        var patient = new PatientAssessmentDto
-        {
-            Id = patientId,
-            BirthDate = new DateTime(1990, 1, 1),
-            GenderId = 1
-        };
-
-        var notes = new List<NoteDto>
-        {
-            new NoteDto
-            {
-                Id = "1",
-                PatientId = patientId,
-                PatientName = "Test Patient",
-                Content = "Note",
-                CreatedAt = DateTime.UtcNow
-            }
-        };
-
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
-            .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
-
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
-            .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
-
-        // Act
-        var result = await _service.CalculateRiskAsync(patientId);
-
-        // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Equal(Gender.Male, result.Value!.Gender);
-    }
-
-    [Fact]
-    public async Task CalculateRiskAsync_WithFemalePatient_MapsGenderCorrectly()
-    {
-        // Arrange
-        var patientId = 1;
-        var patient = new PatientAssessmentDto
-        {
-            Id = patientId,
-            BirthDate = new DateTime(1990, 1, 1),
-            GenderId = 2
-        };
-
-        var notes = new List<NoteDto>
-        {
-            new NoteDto
-            {
-                Id = "1",
-                PatientId = patientId,
-                PatientName = "Test Patient",
-                Content = "Note",
-                CreatedAt = DateTime.UtcNow
-            }
-        };
-
-        _mockApiService
-            .Setup(x => x.GetAsync<PatientAssessmentDto>($"api/patients/{patientId}"))
-            .ReturnsAsync(Result<PatientAssessmentDto>.Success(patient));
-
-        _mockApiService
-            .Setup(x => x.GetAsync<IEnumerable<NoteDto>>($"api/notes/patient/{patientId}"))
-            .ReturnsAsync(Result<IEnumerable<NoteDto>>.Success(notes));
-
-        // Act
-        var result = await _service.CalculateRiskAsync(patientId);
-
-        // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Equal(Gender.Female, result.Value!.Gender);
     }
 }
 

@@ -101,12 +101,20 @@ public class NotesController : Controller
 
         var note = noteResult.Value!;
 
-        var model = new CreateNoteViewModel
+        var patientResult = await _patientService.GetPatientByIdAsync(note.PatientId);
+
+        if (patientResult.IsFailure)
         {
-            PatientId = note.PatientId,
+            TempData.AddToastMessage(new ToastMessage(ToastType.Error, "Patient introuvable"));
+            return RedirectToAction("Index", "Patients");
+        }
+
+        var model = new UpdateNoteViewModel
+        {
             Content = note.Content
         };
 
+        ViewBag.Patient = patientResult.Value;
         ViewBag.NoteId = id;
         ViewBag.Note = note;
 
@@ -115,7 +123,7 @@ public class NotesController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(string id, CreateNoteViewModel model)
+    public async Task<IActionResult> Edit(string id, UpdateNoteViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -132,7 +140,7 @@ public class NotesController : Controller
         }
 
         TempData.AddToastMessage(new ToastMessage(ToastType.Success, "Note mise à jour avec succès"));
-        return RedirectToAction(nameof(PatientNotes), new { id = model.PatientId });
+        return RedirectToAction(nameof(PatientNotes), new { id = result.Value!.PatientId });
     }
 
     [HttpPost]

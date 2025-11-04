@@ -10,10 +10,4 @@ public class ToastMessage
         Type = type;
         Message = message;
     }
-
-    public ToastMessage()
-    {
-        Type = ToastType.None;
-        Message = string.Empty;
-    }
 }

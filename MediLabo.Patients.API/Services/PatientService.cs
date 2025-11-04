@@ -74,7 +74,7 @@ namespace MediLabo.Patients.API.Services
             return Result<PatientDto>.Success(Mapping.MapToDto(createResult.Value!));
         }
 
-        public async Task<Result<PatientDto>> UpdateAsync(int id, CreatePatientDto updateDto)
+        public async Task<Result<PatientDto>> UpdateAsync(int id, UpdatePatientDto updateDto)
         {
             _logger.LogInformation("Updating patient ID: {PatientId}", id);
 

@@ -1,6 +1,7 @@
 ﻿using MediLabo.Common;
 using MediLabo.Common.Models;
 using MediLabo.Common.HttpServices;
+using MediLabo.Common.DTOs;
 
 namespace MediLabo.Web.Services;
 
@@ -18,7 +19,7 @@ public class AssessmentService
     {
         _logger.LogInformation("Retrieving diabetes risk for patient {PatientId}", patientId);
 
-        var result = await _apiService.GetAsync<AssessmentResponse>($"/api/assessments/diabetes/{patientId}");
+        var result = await _apiService.GetAsync<DiabetesRiskResponse>($"/api/assessments/diabetes/{patientId}");
 
         if (result.IsFailure)
         {
@@ -31,10 +32,5 @@ public class AssessmentService
             patientId, result.Value!.RiskLevel);
 
         return Result<DiabetesRiskLevel>.Success(result.Value.RiskLevel);
-    }
-
-    private class AssessmentResponse
-    {
-        public DiabetesRiskLevel RiskLevel { get; set; }
     }
 }

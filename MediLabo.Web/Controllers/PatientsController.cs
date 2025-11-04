@@ -13,11 +13,11 @@ public class PatientsController : Controller
     private readonly AssessmentService _assessmentService;
     private readonly ILogger<PatientsController> _logger;
 
-    public PatientsController(PatientService patientService, ILogger<PatientsController> logger, AssessmentService assessmentService)
+    public PatientsController(PatientService patientService, AssessmentService assessmentService, ILogger<PatientsController> logger)
     {
         _patientService = patientService;
+        _assessmentService = assessmentService; 
         _logger = logger;
-        _assessmentService = assessmentService;
     }
 
     public async Task<IActionResult> Index()
@@ -45,17 +45,20 @@ public class PatientsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        var patient = result.Value!;
+
         var riskResult = await _assessmentService.GetDiabetesRiskAsync(id);
+
         if (riskResult.IsSuccess)
         {
-            result.Value!.DiabetesRisk = riskResult.Value;
+            patient.DiabetesRisk = riskResult.Value;
         }
         else
         {
             _logger.LogWarning("Could not retrieve diabetes risk for patient {PatientId}: {Error}", id, riskResult.Error);
         }
 
-        return View(result.Value);
+        return View(patient);
     }
 
     private async Task LoadGendersAsync()
@@ -117,7 +120,7 @@ public class PatientsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var updateViewModel = new CreatePatientViewModel
+        var updateViewModel = new UpdatePatientViewModel
         {
             FirstName = result.Value!.FirstName,
             LastName = result.Value.LastName,
@@ -134,7 +137,7 @@ public class PatientsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, CreatePatientViewModel updatePatientViewModel)
+    public async Task<IActionResult> Edit(int id, UpdatePatientViewModel updatePatientViewModel)
     {
         if (!ModelState.IsValid)
         {

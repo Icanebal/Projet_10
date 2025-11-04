@@ -159,7 +159,7 @@ namespace MediLabo.Patients.Tests.Controllers
         [Fact]
         public async Task UpdatePatient_ExistingId_ReturnsOkResult()
         {
-            var updateDto = new CreatePatientDto
+            var updateDto = new UpdatePatientDto
             {
                 FirstName = "Updated",
                 LastName = "Patient",
@@ -196,7 +196,7 @@ namespace MediLabo.Patients.Tests.Controllers
         [Fact]
         public async Task UpdatePatient_NonExistingId_ReturnsNotFound()
         {
-            var updateDto = new CreatePatientDto
+            var updateDto = new UpdatePatientDto
             {
                 FirstName = "Updated",
                 LastName = "Patient",
@@ -220,7 +220,7 @@ namespace MediLabo.Patients.Tests.Controllers
         {
             _controller.ModelState.AddModelError("FirstName", "Required");
 
-            var updateDto = new CreatePatientDto
+            var updateDto = new UpdatePatientDto
             {
                 FirstName = "",
                 LastName = "Patient",
