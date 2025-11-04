@@ -1,6 +1,7 @@
 ﻿using MediLabo.Assessments.API.Calculators;
 using MediLabo.Assessments.API.Models;
 using MediLabo.Common;
+using MediLabo.Common.DTOs;
 
 namespace MediLabo.Assessments.API.Services;
 

@@ -18,7 +18,6 @@ builder.Services.AddHttpClient<IApiService, ApiService>(client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
-// Service dédié pour les appels aux APIs Patient et Notes
 builder.Services.AddScoped<IPatientAndNotesService, PatientAndNotesService>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -70,3 +69,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

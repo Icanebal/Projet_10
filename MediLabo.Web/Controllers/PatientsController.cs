@@ -10,11 +10,13 @@ namespace MediLabo.Web.Controllers;
 public class PatientsController : Controller
 {
     private readonly PatientService _patientService;
+    private readonly AssessmentService _assessmentService;
     private readonly ILogger<PatientsController> _logger;
 
-    public PatientsController(PatientService patientService, ILogger<PatientsController> logger)
+    public PatientsController(PatientService patientService, AssessmentService assessmentService, ILogger<PatientsController> logger)
     {
         _patientService = patientService;
+        _assessmentService = assessmentService; 
         _logger = logger;
     }
 
@@ -43,7 +45,20 @@ public class PatientsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        return View(result.Value);
+        var patient = result.Value!;
+
+        var riskResult = await _assessmentService.GetDiabetesRiskAsync(id);
+
+        if (riskResult.IsSuccess)
+        {
+            patient.DiabetesRisk = riskResult.Value;
+        }
+        else
+        {
+            _logger.LogWarning("Could not retrieve diabetes risk for patient {PatientId}: {Error}", id, riskResult.Error);
+        }
+
+        return View(patient);
     }
 
     private async Task LoadGendersAsync()

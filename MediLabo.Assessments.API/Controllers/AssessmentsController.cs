@@ -1,7 +1,6 @@
-﻿using MediLabo.Assessments.API.Models;
-using MediLabo.Assessments.API.Services;
+﻿using MediLabo.Assessments.API.Services;
 using MediLabo.Common;
-using MediLabo.Common.Models;
+using MediLabo.Common.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

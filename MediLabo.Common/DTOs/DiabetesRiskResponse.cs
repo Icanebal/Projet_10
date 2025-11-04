@@ -1,6 +1,6 @@
 ﻿using MediLabo.Common.Models;
 
-namespace MediLabo.Assessments.API.Models
+namespace MediLabo.Common.DTOs
 {
     public class DiabetesRiskResponse
     {

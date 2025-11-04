@@ -13,3 +13,5 @@ var app = builder.Build();
 await app.UseOcelot();
 
 app.Run();
+
+public partial class Program { }

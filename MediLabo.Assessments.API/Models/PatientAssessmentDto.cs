@@ -1,4 +1,4 @@
-﻿namespace MediLabo.Common.DTOs
+﻿namespace MediLabo.Assessments.API.Models
 {
     public class PatientAssessmentDto
     {
