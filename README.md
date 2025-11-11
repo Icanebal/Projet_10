@@ -95,7 +95,7 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 - **Normalisation 3NF** : Bases de données optimisées
 
 #### Code .NET
-- **Async/Await** : Libération des threads lors des I/O
+- **Async/Await** : Libération des threads lors des Input/Output
 - **Using statements** : Libération immédiate des ressources
 - **Injection de dépendances** : Gestion optimisée du cycle de vie
 
@@ -117,7 +117,7 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 * **Limiter CPU/Mémoire par conteneur** : Éviter la surconsommation et maîtriser l'utilisation des ressources
 
 #### Logs
-* **Niveau Warning en production** : Réduction des écritures disque (moins d'I/O)
+* **Niveau Warning en production** : Réduction des écritures disque (moins d'Input/Output)
 
 #### Base de données
 * **Pagination des listes** : Charger 20 patients au lieu de 10 000 réduit la consommation mémoire.
