@@ -4,14 +4,14 @@ namespace MediLabo.Web.Models.ViewModels;
 
 public class UpdatePatientViewModel
 {
-    [Required(ErrorMessage = "Le prénom est obligatoire")]
-    [Display(Name = "Prénom")]
-    [StringLength(100, ErrorMessage = "Le prénom ne peut pas dépasser 100 caractères")]
+    [Required(ErrorMessage = "Le prÃ©nom est obligatoire")]
+    [Display(Name = "PrÃ©nom")]
+    [StringLength(100, ErrorMessage = "Le prÃ©nom ne peut pas dÃ©passer 100 caractÃ¨res")]
     public required string FirstName { get; set; }
 
     [Required(ErrorMessage = "Le nom est obligatoire")]
     [Display(Name = "Nom")]
-    [StringLength(100, ErrorMessage = "Le nom ne peut pas dépasser 100 caractères")]
+    [StringLength(100, ErrorMessage = "Le nom ne peut pas dÃ©passer 100 caractÃ¨res")]
     public required string LastName { get; set; }
 
     [Required(ErrorMessage = "La date de naissance est obligatoire")]
@@ -21,15 +21,15 @@ public class UpdatePatientViewModel
 
     [Required(ErrorMessage = "Le genre est obligatoire")]
     [Display(Name = "Genre")]
-    [Range(1, int.MaxValue, ErrorMessage = "Veuillez sélectionner un genre")]
+    [Range(1, int.MaxValue, ErrorMessage = "Veuillez sÃ©lectionner un genre")]
     public required int GenderId { get; set; }
 
     [Display(Name = "Adresse")]
-    [StringLength(200, ErrorMessage = "L'adresse ne peut pas dépasser 200 caractères")]
+    [StringLength(200, ErrorMessage = "L'adresse ne peut pas dÃ©passer 200 caractÃ¨res")]
     public string? Address { get; set; }
 
-    [Display(Name = "Téléphone")]
-    [Phone(ErrorMessage = "Le numéro de téléphone n'est pas valide")]
-    [StringLength(20, ErrorMessage = "Le numéro de téléphone ne peut pas dépasser 20 caractères")]
+    [Display(Name = "TÃ©lÃ©phone")]
+    [Phone(ErrorMessage = "Le numÃ©ro de tÃ©lÃ©phone n'est pas valide")]
+    [StringLength(20, ErrorMessage = "Le numÃ©ro de tÃ©lÃ©phone ne peut pas dÃ©passer 20 caractÃ¨res")]
     public string? Phone { get; set; }
 }

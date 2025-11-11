@@ -1,0 +1,146 @@
+version: '3.8'
+
+services:
+  # Base de données SQL Server
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: medilabo-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - medilabo-network
+
+  # Base de données MongoDB
+  mongodb:
+    image: mongo:7.0
+    container_name: medilabo-mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=MediLaboNotes
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - medilabo-network
+
+  # Identity API
+  identity-api:
+    build:
+      context: .
+      dockerfile: MediLabo.Identity.API/Dockerfile
+    container_name: medilabo-identity-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5003:80"
+    networks:
+      - medilabo-network
+    restart: on-failure
+
+  # Patients API
+  patients-api:
+    build:
+      context: .
+      dockerfile: MediLabo.Patients.API/Dockerfile
+    container_name: medilabo-patients-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5001:80"
+    depends_on:
+      identity-api:
+        condition: service_started
+    networks:
+      - medilabo-network
+    restart: on-failure
+
+  # Notes API
+  notes-api:
+    build:
+      context: .
+      dockerfile: MediLabo.Notes.API/Dockerfile
+    container_name: medilabo-notes-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5004:80"
+    depends_on:
+      identity-api:
+        condition: service_started
+    networks:
+      - medilabo-network
+    restart: on-failure
+
+  # Assessments API
+  assessments-api:
+    build:
+      context: .
+      dockerfile: MediLabo.Assessments.API/Dockerfile
+    container_name: medilabo-assessments-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5005:80"
+    depends_on:
+      - patients-api
+      - notes-api
+    networks:
+      - medilabo-network
+    restart: on-failure
+
+  # Gateway Ocelot
+  gateway:
+    build:
+      context: .
+      dockerfile: MediLabo.Gateway/Dockerfile
+    container_name: medilabo-gateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5000:80"
+    depends_on:
+      - identity-api
+      - patients-api
+      - notes-api
+      - assessments-api
+    networks:
+      - medilabo-network
+    restart: on-failure
+
+  # Frontend Web
+  web:
+    build:
+      context: .
+      dockerfile: MediLabo.Web/Dockerfile
+    container_name: medilabo-web
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5002:80"
+    depends_on:
+      - gateway
+    networks:
+      - medilabo-network
+    restart: on-failure
+
+# Volumes pour persister les données
+volumes:
+  sqlserver-data:
+  mongodb-data:
+
+# Réseau privé pour la communication inter-conteneurs
+networks:
+  medilabo-network:
+    driver: bridge

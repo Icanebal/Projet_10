@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -12,6 +12,9 @@
   </ItemGroup>
 
 	<ItemGroup>
+		<Content Update="ocelot.Docker.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Update="ocelot.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>

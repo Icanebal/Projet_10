@@ -9,6 +9,11 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.EnvironmentName == "Docker")
+{
+    builder.Configuration.AddJsonFile("appsettings.Docker.json", optional: false, reloadOnChange: true);
+}
+
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<PatientDbContext>(options =>
@@ -45,6 +50,21 @@ builder.Services.AddScoped<PatientService>();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<PatientDbContext>();
+
+    // Créer la BDD et appliquer les migrations
+    context.Database.Migrate();
+
+    // Logger pour confirmer
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("Patients database migration completed successfully");
+}
+
 
 if (app.Environment.IsDevelopment())
 {
