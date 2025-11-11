@@ -117,10 +117,11 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 * **Limiter CPU/Mémoire par conteneur** : Éviter la surconsommation et maîtriser l'utilisation des ressources
 
 #### Logs
-* **Niveau Warning en production** : Réduction de 80% des écritures disque (moins d'I/O)
+* **Niveau Warning en production** : Réduction des écritures disque (moins d'I/O)
 
 #### Base de données
-* **Pagination des listes** : Charger 20 patients au lieu de 10 000 réduit la consommation mémoire de 95%
+* **Pagination des listes** : Charger 20 patients au lieu de 10 000 réduit la consommation mémoire.
+* **Fonction de recherche de patients** : Permet de trouver directement un patient.
 
 #### UX/Accessibilité
-* **Mode sombre** : Économie d'énergie sur écrans OLED/AMOLED (jusqu'à 60% de consommation en moins)
+* **Mode sombre** : Économie d'énergie sur écrans.
