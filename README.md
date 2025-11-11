@@ -35,7 +35,8 @@ Aider les médecins à détecter précocement les risques de diabète en analysa
 ## 🏗️ Architecture
 
 ### Schéma global
-[Architecture MediLabo.pdf](https://github.com/user-attachments/files/23476739/Architecture.MediLabo.pdf)
+<img width="1167" height="928" alt="Architecture MediLabo" src="https://github.com/user-attachments/assets/2a2ad0d6-5f28-4bf5-95a9-f5a673ccf0f4" />
+
 
 
 ### Microservices
