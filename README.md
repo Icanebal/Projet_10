@@ -1,19 +1,5 @@
 # MediLabo Solutions - Système de Détection du Diabète de Type 2
 
-## 📋 Table des matières
-1. [Description du projet](#description)
-2. [Architecture](#architecture)
-3. [Technologies utilisées](#technologies)
-4. [Prérequis](#prérequis)
-5. [Installation et lancement](#installation)
-6. [Accès à l'application](#accès)
-7. [Comptes et données de test](#données-test)
-8. [Structure du projet](#structure)
-9. [Endpoints API](#endpoints)
-10. [Green Code - Bonnes pratiques](#green-code)
-11. [Améliorations futures](#améliorations)
-12. [Auteur](#auteur)
-
 ---
 
 ## 📖 Description du projet
