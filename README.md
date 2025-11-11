@@ -121,7 +121,6 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 
 #### Base de données
 * **Pagination des listes** : Charger 20 patients au lieu de 10 000 réduit la consommation mémoire.
-* **Fonction de recherche de patients** : Permet de trouver directement un patient.
 
 #### UX/Accessibilité
 * **Mode sombre** : Économie d'énergie sur écrans.
