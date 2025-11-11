@@ -3,9 +3,16 @@ using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+if (builder.Environment.EnvironmentName == "Docker")
+{
+    builder.Configuration.AddJsonFile("appsettings.Docker.json", optional: false, reloadOnChange: true);
+}
 
-builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+var ocelotFileName = builder.Environment.EnvironmentName == "Docker"
+    ? "ocelot.Docker.json"
+    : "ocelot.json";
+
+builder.Configuration.AddJsonFile(ocelotFileName, optional: false, reloadOnChange: true);
 builder.Services.AddOcelot();
 
 var app = builder.Build();

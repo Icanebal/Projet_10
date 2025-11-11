@@ -1,0 +1,67 @@
+{
+    "Routes": [
+        {
+            "DownstreamPathTemplate": "/api/patients/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "patients-api",
+                    "Port": 80
+                }
+            ],
+            "UpstreamPathTemplate": "/api/patients/{everything}",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/notes/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "notes-api",
+                    "Port": 80
+                }
+            ],
+            "UpstreamPathTemplate": "/api/notes/{everything}",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/assessments/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "assessments-api",
+                    "Port": 80
+                }
+            ],
+            "UpstreamPathTemplate": "/api/assessments/{everything}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/auth/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "identity-api",
+                    "Port": 80
+                }
+            ],
+            "UpstreamPathTemplate": "/api/auth/{everything}",
+            "UpstreamHttpMethod": [ "POST" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/users/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "identity-api",
+                    "Port": 80
+                }
+            ],
+            "UpstreamPathTemplate": "/api/users/{everything}",
+            "UpstreamHttpMethod": [ "GET", "DELETE" ]
+        }
+    ],
+    "GlobalConfiguration": {
+        "BaseUrl": "http://gateway"
+    }
+}

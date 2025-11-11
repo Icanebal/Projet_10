@@ -9,6 +9,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.EnvironmentName == "Docker")
+{
+    builder.Configuration.AddJsonFile("appsettings.Docker.json", optional: false, reloadOnChange: true);
+}
+
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<IdentityDbContext>(options =>

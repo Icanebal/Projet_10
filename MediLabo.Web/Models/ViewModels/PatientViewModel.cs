@@ -34,10 +34,10 @@ public class PatientViewModel
     public string DiabetesRiskLabel => DiabetesRisk switch
     {
         DiabetesRiskLevel.None => "Aucun",
-        DiabetesRiskLevel.Borderline => "Risque limité",
+        DiabetesRiskLevel.Borderline => "Risque limitÃ©",
         DiabetesRiskLevel.InDanger => "Danger",
-        DiabetesRiskLevel.EarlyOnset => "Apparition précoce",
-        _ => "Non évalué"
+        DiabetesRiskLevel.EarlyOnset => "Apparition prÃ©coce",
+        _ => "Non Ã©valuÃ©"
     };
 
     public string DiabetesRiskBadgeClass => DiabetesRisk switch
