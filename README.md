@@ -2,7 +2,7 @@
 
 ---
 
-## 📖 Description du projet
+## Description du projet
 
 Application médicale développée pour **MediLabo Solutions** permettant d'identifier les patients à risque de diabète  de type 2.
 
@@ -18,14 +18,14 @@ Aider les médecins à détecter précocement les risques de diabète en analysa
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### Schéma global
 <img width="4168" height="3684" alt="Architecture MediLabo" src="https://github.com/user-attachments/assets/5290b9b8-2a5a-48d5-8d82-62cf5729338f" />
 
 ---
 
-## 🛠️ Technologies utilisées
+## Technologies utilisées
 
 - **Backend** : ASP.NET Core 9.0
 - **Frontend** : ASP.NET Core MVC, Razor, Bootstrap
@@ -39,7 +39,7 @@ Aider les médecins à détecter précocement les risques de diabète en analysa
 
 ---
 
-## 🚀 Installation et lancement
+## Installation et lancement
 
 ### 1. Cloner le repository
 
@@ -48,7 +48,7 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 
 ---
 
-## 🌐 Accès à l'application
+## Accès à l'application et Endpoints API
 
 ### Interface utilisateur
 **URL** : http://localhost:5002
@@ -56,17 +56,9 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 ### API Gateway
 **URL** : http://localhost:5000
 
----
-
-## 👤 Compte de test
-
 ### Compte administrateur
 - **Email** : admin@medilabo.com
 - **Mot de passe** : Admin123!
-
----
-
-## 🔌 Endpoints API
 
 ### Identity API (`/api/auth` et `/api/users`)
 - `POST /api/auth/login` : Connexion (retourne JWT token)
@@ -93,31 +85,26 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 
 ---
 
-## 🌱 Green Code - Bonnes pratiques
+## Green Code - Bonnes pratiques
 
 ### Principes appliqués
 
-#### ✅ Architecture & Conception
+#### Architecture & Conception
 - **Microservices découplés** : Scalabilité ciblée
 - **Principe YAGNI** : Aucune fonctionnalité superflue
 - **Normalisation 3NF** : Bases de données optimisées
 
-#### ✅ Docker
+#### Docker
 - **Multi-stage builds** : Images légères (SDK séparé du runtime)
 - **HTTP entre conteneurs** : Pas de chiffrement inutile
 - **Volumes persistants** : Conservation des données
 
-#### ✅ Code .NET
+#### Code .NET
 - **Async/Await** : Libération des threads lors des I/O
 - **Using statements** : Libération immédiate des ressources
 - **Injection de dépendances** : Gestion optimisée du cycle de vie
 
-#### ✅ Base de données
+#### Base de données
 - **Entity Framework Core** : Requêtes optimisées (LINQ)
 - **Connection pooling** : Réutilisation des connexions
 - **Index sur colonnes recherchées** : Performances accrues
-
-### Ressources
-- [Green Software Foundation](https://greensoftware.foundation/)
-- [Microsoft Sustainability](https://learn.microsoft.com/en-us/azure/architecture/framework/sustainability/)
-- [Référentiel Green IT (CNUMR)](https://www.greenit.fr/)
