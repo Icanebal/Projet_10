@@ -99,7 +99,28 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 - **Using statements** : Libération immédiate des ressources
 - **Injection de dépendances** : Gestion optimisée du cycle de vie
 
+#### Frontend
+* **Interface simple et épurée** : Pas de scripts/animations inutiles
+* **Views optimisées** : Appels API limités au strict nécessaire
+
 #### Base de données
 - **Entity Framework Core** : Requêtes optimisées (LINQ)
 - **Connection pooling** : Réutilisation des connexions
 - **Index sur colonnes recherchées** : Performances accrues
+
+### Recommandations d'amélioration
+
+#### Images Docker
+* **Alpine au lieu de Debian** : Réduction de 60% de la taille des images.
+
+#### Ressources
+* **Limiter CPU/Mémoire par conteneur** : Éviter la surconsommation et maîtriser l'utilisation des ressources
+
+#### Logs
+* **Niveau Warning en production** : Réduction de 80% des écritures disque (moins d'I/O)
+
+#### Base de données
+* **Pagination des listes** : Charger 20 patients au lieu de 10 000 réduit la consommation mémoire de 95%
+
+#### UX/Accessibilité
+* **Mode sombre** : Économie d'énergie sur écrans OLED/AMOLED (jusqu'à 60% de consommation en moins)
