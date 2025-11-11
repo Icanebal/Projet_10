@@ -56,12 +56,6 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 ### API Gateway
 **URL** : http://localhost:5000
 
-### Endpoints individuels (développement)
-- Identity API : http://localhost:5003
-- Patients API : http://localhost:5001
-- Notes API : http://localhost:5004
-- Assessments API : http://localhost:5005
-
 ---
 
 ## 👤 Compte de test
