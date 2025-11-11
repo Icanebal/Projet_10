@@ -94,11 +94,6 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 - **Principe YAGNI** : Aucune fonctionnalité superflue
 - **Normalisation 3NF** : Bases de données optimisées
 
-#### Docker
-- **Multi-stage builds** : Images légères (SDK séparé du runtime)
-- **HTTP entre conteneurs** : Pas de chiffrement inutile
-- **Volumes persistants** : Conservation des données
-
 #### Code .NET
 - **Async/Await** : Libération des threads lors des I/O
 - **Using statements** : Libération immédiate des ressources
