@@ -90,7 +90,7 @@ Vous devriez voir 8 conteneurs en cours d'exécution.
 ### Principes appliqués
 
 #### Architecture & Conception
-- **Microservices découplés** : Scalabilité ciblée
+- **Microservices découplés** : Scalabilité ciblée MAIS peut, selon les contextes, être plus énergivores qu'une application monolithique.
 - **Principe YAGNI** : Aucune fonctionnalité superflue
 - **Normalisation 3NF** : Bases de données optimisées
 
