@@ -46,6 +46,9 @@ Aider les médecins à détecter précocement les risques de diabète en analysa
 ### 2. Lancer l'application avec Docker
 Vous devriez voir 8 conteneurs en cours d'exécution.
 
+### 3. Importer les données de tests des notes avec MongoDB Compass
+Connectez-vous à la base de données Mongo du projet et importer le fichier notes-seed.json (présent à la racine du projet)
+
 ---
 
 ## Accès à l'application et Endpoints API
