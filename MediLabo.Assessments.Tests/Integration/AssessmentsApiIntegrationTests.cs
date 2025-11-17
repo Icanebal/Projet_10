@@ -7,8 +7,6 @@ using MediLabo.Common.Models;
 
 namespace MediLabo.Assessments.API.Tests.Integration;
 
-// Tests d'intégration pour l'API Assessments
-// Teste le endpoint /api/assessments/diabetes/{patientId} de bout en bout
 [Trait("Category", "Integration")]
 public class AssessmentsApiIntegrationTests : IClassFixture<AssessmentsWebApplicationFactory>
 {
@@ -22,7 +20,7 @@ public class AssessmentsApiIntegrationTests : IClassFixture<AssessmentsWebApplic
         _client = factory.CreateClient();
     }
 
-    // Test Patient 1: TestNone (Femme, 58 ans, 0 termes) → None
+
     [Fact]
     public async Task GetDiabetesRisk_Patient1TestNone_ReturnsNone()
     {
@@ -39,7 +37,6 @@ public class AssessmentsApiIntegrationTests : IClassFixture<AssessmentsWebApplic
             "Femme de 58 ans avec 0 termes déclencheurs devrait avoir un risque 'None'");
     }
 
-    // Test Patient 2: TestBorderline (Homme, 79 ans, 2 termes) → Borderline
     [Fact]
     public async Task GetDiabetesRisk_Patient2TestBorderline_ReturnsBorderline()
     {
@@ -55,7 +52,6 @@ public class AssessmentsApiIntegrationTests : IClassFixture<AssessmentsWebApplic
             "Homme de 79 ans avec 2 termes déclencheurs devrait avoir un risque 'Borderline'");
     }
 
-    // Test Patient 3: TestInDanger (Homme, 20 ans, 3 termes) → InDanger
     [Fact]
     public async Task GetDiabetesRisk_Patient3TestInDanger_ReturnsInDanger()
     {
@@ -71,7 +67,6 @@ public class AssessmentsApiIntegrationTests : IClassFixture<AssessmentsWebApplic
             "Homme de 20 ans avec 3 termes déclencheurs devrait avoir un risque 'InDanger'");
     }
 
-    // Test Patient 4: TestEarlyOnset (Femme, 22 ans, 7+ termes) → EarlyOnset
     [Fact]
     public async Task GetDiabetesRisk_Patient4TestEarlyOnset_ReturnsEarlyOnset()
     {
@@ -87,7 +82,6 @@ public class AssessmentsApiIntegrationTests : IClassFixture<AssessmentsWebApplic
             "Femme de 22 ans avec 7+ termes déclencheurs devrait avoir un risque 'EarlyOnset'");
     }
 
-    // Test global: Tous les patients retournent le bon risque
     [Fact]
     public async Task GetDiabetesRisk_AllTestPatients_ReturnCorrectRiskLevels()
     {
@@ -112,7 +106,6 @@ public class AssessmentsApiIntegrationTests : IClassFixture<AssessmentsWebApplic
         }
     }
 
-    // Test: Patient inexistant
     [Fact]
     public async Task GetDiabetesRisk_NonExistentPatient_ReturnsNotFound()
     {
